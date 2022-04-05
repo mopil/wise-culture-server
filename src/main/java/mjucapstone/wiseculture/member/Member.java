@@ -1,8 +1,8 @@
 package mjucapstone.wiseculture.member;
 
+import lombok.Builder;
 import lombok.Getter;
 import mjucapstone.wiseculture.location.Location;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,4 +29,18 @@ public class Member {
 
     @OneToMany
     private List<Location> locationList = new ArrayList<>();
+
+    @Builder
+    public Member(String userId, String email, String name, String nickname, String password, String phoneNumber) {
+        this.userId = userId;
+        this.email = email;
+        this.name = name;
+        this.nickname = nickname;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
+
+    protected Member() {
+
+    }
 }
