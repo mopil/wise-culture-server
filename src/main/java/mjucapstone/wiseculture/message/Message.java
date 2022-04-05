@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import mjucapstone.wiseculture.member.Member;
 
@@ -16,11 +18,12 @@ public class Message {
 	@Column(name = "message_id")
 	private Long id;
 	
-	@Column(name = "member_id")
-	private Member member;
+	@ManyToOne
+	private Member sender;
 	
-	private String sender;
-	private String receiver;
+	@ManyToOne
+	private Member receiver;
+	
 	private String content;
 	private LocalDateTime createdDate;
 	

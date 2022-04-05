@@ -1,13 +1,18 @@
 package mjucapstone.wiseculture.location;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 
-import mjucapstone.wiseculture.board.Board;
+import mjucapstone.wiseculture.member.Member;
 
 @Entity
 public class Location {
@@ -16,8 +21,12 @@ public class Location {
 	@Column(name = "location_id")
 	private Long id;
 	
-	@Column(name = "board_id")
-	private Board board;
+	/*@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;*/
+	@ManyToMany
+	//@JoinTable(name = "member_id")
+	private List<Member> members = new ArrayList<>();
 	
 	private Float latitude;
 	private Float longitude;

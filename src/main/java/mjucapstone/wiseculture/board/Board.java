@@ -6,8 +6,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.springframework.data.annotation.CreatedDate;
+
+import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.member.Member;
 
 @Entity
 public class Board {
@@ -25,4 +30,11 @@ public class Board {
 	private String content;
 	private Integer viewCount;
 	
+	@ManyToOne
+	@JoinColumn(name = "location_id")
+	private Location location;
+	
+	@ManyToOne
+	@JoinColumn(name = "member_id")
+	private Member member;
 }

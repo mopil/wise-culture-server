@@ -4,6 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import mjucapstone.wiseculture.board.Board;
 
 @Entity
 public class Comment {
@@ -12,8 +16,9 @@ public class Comment {
 	@Column(name = "comment_id")
 	private Long id;
 	
-	@Column(name = "board_id")
-	private Long boardId;
+	@ManyToOne
+	@JoinColumn(name = "board_id")
+	private Board board;
 	
 	private String content;
 	
