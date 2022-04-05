@@ -34,12 +34,6 @@ public class Location {
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	
-	private String name;	
-	
-	enum Category {
-		영화,
-		축제,
-		관광지
-	}
+	private String name;
 	
 }

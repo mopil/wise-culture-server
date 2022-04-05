@@ -1,5 +1,7 @@
 package mjucapstone.wiseculture.comment;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +25,6 @@ public class Comment {
 	private String content;
 	
 	@Column(name = "created_at")
-	private String createdAt;
+	private LocalDateTime createdAt;
 	
 }

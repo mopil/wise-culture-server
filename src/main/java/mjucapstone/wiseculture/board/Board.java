@@ -28,7 +28,7 @@ public class Board {
 	private LocalDateTime createdAt;
 	
 	private String content;
-	private Integer viewCount;
+	private int viewCount;
 	
 	@ManyToOne
 	@JoinColumn(name = "location_id")
