@@ -23,6 +23,13 @@ public class MemberService {
         return member.getId();
     }
 
+    /**
+     * 닉네임 중복 체크
+     */
+    public boolean nicknameCheck(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
+
 
 
 }

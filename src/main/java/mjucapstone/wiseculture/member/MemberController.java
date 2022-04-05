@@ -15,7 +15,6 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/new")
     public ResponseEntity<Member> signUp(@Valid @ModelAttribute MemberSignUpDto form, BindingResult bindingResult) throws Exception {
@@ -29,7 +28,7 @@ public class MemberController {
 
     @GetMapping("/nickname-check/{nickname}")
     public boolean nicknameCheck(@PathVariable String nickname) {
-        return memberRepository.existsByNickname(nickname);
+        return memberService.nicknameCheck(nickname);
     }
 
 
