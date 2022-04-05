@@ -1,11 +1,14 @@
 package mjucapstone.wiseculture.member;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.Getter;
+import mjucapstone.wiseculture.location.Location;
+import net.minidev.json.annotate.JsonIgnore;
 
-@Entity
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity @Getter
 public class Member {
 
     @Id @GeneratedValue
@@ -15,6 +18,7 @@ public class Member {
     @Column(name = "user_id")
     private String userId;
 
+    private String email;
     private String name;
     private String nickname;
     private String password;
@@ -22,4 +26,7 @@ public class Member {
 
     @Column(name = "phone")
     private String phoneNumber;
+
+    @OneToMany
+    private List<Location> locationList = new ArrayList<>();
 }

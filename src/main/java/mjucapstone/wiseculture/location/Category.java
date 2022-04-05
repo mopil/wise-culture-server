@@ -1,7 +1,7 @@
 package mjucapstone.wiseculture.location;
 
 public enum Category {
-	Movie,
-	Festival,
-	Attraction
+	MOVIE,
+	FESTIVAL,
+	ATTRACTION
 }

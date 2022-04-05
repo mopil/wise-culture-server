@@ -2,19 +2,15 @@ package mjucapstone.wiseculture.board;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import mjucapstone.wiseculture.location.Location;
 import mjucapstone.wiseculture.member.Member;
 
-@Entity
+@Entity @Getter
 public class Board {
 	
 	@Id @GeneratedValue
@@ -25,16 +21,16 @@ public class Board {
 	
 	@CreatedDate
 	@Column(name = "created_at")
-	private LocalDateTime createdAt;
+	private LocalDateTime createdDate;
 	
 	private String content;
 	private int viewCount;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")
 	private Location location;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 }
