@@ -1,13 +1,14 @@
-package mjucapstone.wiseculture.member;
+package mjucapstone.wiseculture.member.signup;
 
 import lombok.Data;
+import mjucapstone.wiseculture.member.Member;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
-public class MemberSignUpDto {
+public class SignUpDto {
 
     @NotEmpty(message = "아이디를 입력해 주세요")
     @Size(min = 4, max = 10, message = "아이디는 4~10글자 사이로 입력해주세요")
@@ -30,11 +31,11 @@ public class MemberSignUpDto {
     @Size(min = 2, max = 10, message = "닉네임은 2~10글자 사이로 입력해주세요")
     private String nickname;
 
-    public Member buildMember() {
+    public Member buildMember(String encryptedPassword) {
         return Member.builder()
                 .userId(this.id)
                 .name(this.name)
-                .password(this.password)
+                .password(encryptedPassword)
                 .nickname(this.nickname)
                 .email(this.email)
                 .phoneNumber(this.phoneNumber)

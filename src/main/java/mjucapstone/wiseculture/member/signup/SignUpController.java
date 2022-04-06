@@ -1,7 +1,9 @@
-package mjucapstone.wiseculture.member;
+package mjucapstone.wiseculture.member.signup;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mjucapstone.wiseculture.member.Member;
+import mjucapstone.wiseculture.member.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -12,16 +14,17 @@ import javax.validation.Valid;
 @Slf4j
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class MemberController {
+public class SignUpController {
 
     private final MemberService memberService;
 
     @PostMapping("/new")
-    public ResponseEntity<Member> signUp(@Valid @ModelAttribute MemberSignUpDto form, BindingResult bindingResult) throws Exception {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpDto form, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
-            return (ResponseEntity<Member>) ResponseEntity.internalServerError();
+            log.info("errors = {}", bindingResult);
+            return ResponseEntity.badRequest().body(bindingResult.getFieldErrors());
         }
-        Member member = form.buildMember();
+        Member member = form.buildMember("112021");
         memberService.signUp(member);
         return ResponseEntity.ok().body(member);
     }

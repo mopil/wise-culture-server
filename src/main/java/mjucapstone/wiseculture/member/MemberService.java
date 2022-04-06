@@ -15,12 +15,12 @@ public class MemberService {
      * 회원가입
      */
     @Transactional
-    public Long signUp(Member member) throws Exception {
+    public Member signUp(Member member) throws Exception {
         if (memberRepository.existsByName(member.getName())) {
             throw new Exception("이미 존재하는 회원입니다.");
         }
         memberRepository.save(member);
-        return member.getId();
+        return member;
     }
 
     /**
