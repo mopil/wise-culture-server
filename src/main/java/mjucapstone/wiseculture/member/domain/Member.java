@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.member;
+package mjucapstone.wiseculture.member.domain;
 
 import lombok.Builder;
 import lombok.Getter;

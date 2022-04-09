@@ -8,7 +8,7 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import mjucapstone.wiseculture.location.Location;
-import mjucapstone.wiseculture.member.Member;
+import mjucapstone.wiseculture.member.domain.Member;
 
 @Entity @Getter
 public class Board {

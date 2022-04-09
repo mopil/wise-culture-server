@@ -6,7 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import lombok.Getter;
-import mjucapstone.wiseculture.member.Member;
+import mjucapstone.wiseculture.member.domain.Member;
 
 @Entity @Getter
 public class Location {

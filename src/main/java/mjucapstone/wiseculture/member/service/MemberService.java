@@ -1,6 +1,11 @@
-package mjucapstone.wiseculture.member;
+package mjucapstone.wiseculture.member.service;
 
 import lombok.RequiredArgsConstructor;
+import mjucapstone.wiseculture.common.ApiResponse;
+import mjucapstone.wiseculture.common.dto.BoolResponse;
+import mjucapstone.wiseculture.member.MemberRepository;
+import mjucapstone.wiseculture.member.domain.Member;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

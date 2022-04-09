@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 import lombok.Getter;
-import mjucapstone.wiseculture.member.Member;
+import mjucapstone.wiseculture.member.domain.Member;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity @Getter
