@@ -2,7 +2,7 @@ package mjucapstone.wiseculture.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.common.ApiResponse;
+import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.EncryptManager;
 import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
@@ -28,7 +28,6 @@ public class MemberController {
 
     @PostMapping("/new")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpForm form, BindingResult bindingResult) throws Exception {
-        // 유효성 검사에 실패한 요청, 오류들은 bindingResult 객체의 FieldError로 잡혀집니다. 그걸 JSON으로 변환해서 내려줍니다.
         if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
@@ -38,7 +37,6 @@ public class MemberController {
         return ApiResponse.success(member);
     }
 
-    // 모든 HTTP 요청은 JSON형식으로 응답을 내려줘야해서 DTO를 만들었습니다. 그냥 bool을 리턴하면 JSON형태로 응답이 안 내려감
     @GetMapping("/nickname-check/{nickname}")
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname) {
         return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
@@ -57,7 +55,7 @@ public class MemberController {
         return ApiResponse.badRequest(new ErrorDto(ErrorCode.SIGN_UP_ERROR, e.getMessage()));
     }
 
-    // 기타 예외 처리 : 서버에서 발생하는 다른 모든 예외는 얘가 잡아줍니다.
+    // 기타 예외 처리
     @ExceptionHandler(Exception.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> otherExHandle(Exception e) {

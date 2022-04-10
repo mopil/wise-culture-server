@@ -10,4 +10,5 @@ public class WiseCultureApplication {
 		SpringApplication.run(WiseCultureApplication.class, args);
 	}
 
+
 }

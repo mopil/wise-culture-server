@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.common;
+package mjucapstone.wiseculture.common.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

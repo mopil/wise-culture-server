@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.common.ApiResponse;
+import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
@@ -59,12 +59,12 @@ public class LoginController {
 	// 올바르지 않은 ID, PW 예외 처리
 	@ExceptionHandler(LoginException.class)
 	@ResponseStatus(code = HttpStatus.FORBIDDEN)
-	public ResponseEntity<?> loginExceptionHandle(LoginException exception) {
+	public ResponseEntity<?> loginExHandle(LoginException exception) {
 		log.error("[exceptionHandle] loginEx", exception);
 		return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "잘못된 아이디 또는 비밀번호"));
 	}
 	
-	// 기타 예외 처리 : 서버에서 발생하는 다른 모든 예외는 얘가 잡아줍니다.
+	// 기타 예외 처리
     @ExceptionHandler(Exception.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ResponseEntity<?> otherExHandle(Exception e) {
