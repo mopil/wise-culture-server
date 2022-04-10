@@ -12,5 +12,8 @@ public class ErrorCode {
      */
     public static final String SIGN_UP_ERROR = "signUp";
     public static final String VALIDATION_ERROR = "validation";
+    
+    // 로그인 오류
+    public static final String LOGIN_FAILED = "login";
 
 }
