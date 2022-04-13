@@ -1,22 +1,33 @@
 package mjucapstone.wiseculture.member.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.EncryptManager;
+import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.member.exception.SignUpException;
-import mjucapstone.wiseculture.member.service.MemberService;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import mjucapstone.wiseculture.member.exception.LoginException;
+import mjucapstone.wiseculture.member.exception.SignUpException;
+import mjucapstone.wiseculture.member.service.LoginService;
+import mjucapstone.wiseculture.member.service.MemberService;
 
 @RestController
 @Slf4j
@@ -25,6 +36,7 @@ import javax.validation.Valid;
 public class MemberController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     @PostMapping("/new")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpForm form, BindingResult bindingResult) throws Exception {
@@ -41,6 +53,53 @@ public class MemberController {
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname) {
         return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
     }
+    
+    
+    
+    // 회원 목록(직접 테스트시 확인 용)
+    @RequestMapping("/users")
+    public ResponseEntity<?> getAllUser() {
+    	return ApiResponse.success(memberService.getAllMember());
+    }
+    
+    // 회원 정보
+    @RequestMapping("/info")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+    	
+    	// 현재 로그인된 사용자 확인
+    	Member member = loginService.checkLogin(request);
+    	
+    	// 현재 로그인된 사용자 정보 가져오기
+    	member = memberService.findMember(member.getUserId());
+    	if(member == null) return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "존재하지 않는 계정으로 로그인 됨"));
+    	
+    	return ApiResponse.success(member);
+    }
+    
+    // ==========<회원 정보 수정>==========
+    // 닉네임 수정
+    @PostMapping("/change/nickname")
+    public ResponseEntity<?> changeNickname() {
+    	return null;
+    }
+    // 비밀번호 수정
+    @PostMapping("/change/password")
+    public ResponseEntity<?> changePassword() {
+    	return null;
+    }
+    // =================================
+    
+    // 아이디 찾기
+    @PostMapping("/find/userID")
+    public ResponseEntity<?> findUserID() {
+    	return null;
+    }
+    
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteUser() {
+    	return null;
+    }
 
     /**
      *  예외 처리
@@ -54,6 +113,14 @@ public class MemberController {
         log.error("[exceptionHandle] ex", e);
         return ApiResponse.badRequest(new ErrorDto(ErrorCode.SIGN_UP_ERROR, e.getMessage()));
     }
+    
+	// 로그인 안 된 경우 예외 처리
+ 	@ExceptionHandler(LoginException.class)
+ 	@ResponseStatus(code = HttpStatus.FORBIDDEN)
+ 	public ResponseEntity<?> loginExHandle(LoginException exception) {
+ 		log.error("[exceptionHandle] loginEx", exception);
+ 		return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "잘못된 아이디 또는 비밀번호"));
+ 	}
 
     // 기타 예외 처리
     @ExceptionHandler(Exception.class)

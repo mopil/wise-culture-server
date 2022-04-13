@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class SessionManager {
 
 	private static final String SESSION_COOKIE_NAME = "wisecultureSessoinId";
-	private Map<String, Object> sessionStore = new ConcurrentHashMap<>();
+	private static Map<String, Object> sessionStore = new ConcurrentHashMap<>();
 	
 	// 세션 생성
 	public void createSession(Object value, HttpServletResponse response) {
