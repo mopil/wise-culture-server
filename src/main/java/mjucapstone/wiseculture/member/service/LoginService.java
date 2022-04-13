@@ -29,7 +29,7 @@ public class LoginService {
 		
 		// ID, PW가 잘못된 경우 예외 발생
 		if(member == null) throw new LoginException("올바르지 않은 사용자 ID");
-		if(!EncryptManager.check(member.getPassword(), loginForm.getPassword())) throw new LoginException("올바르지 않은 비밀번호");
+		if(!EncryptManager.check(loginForm.getPassword(), member.getPassword())) throw new LoginException("올바르지 않은 비밀번호");
 		
 		// 세션 생성
 		sessionManager.createSession(member, httpServletResponse);

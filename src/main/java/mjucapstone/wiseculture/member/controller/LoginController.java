@@ -63,13 +63,6 @@ public class LoginController {
 		log.error("[exceptionHandle] loginEx", exception);
 		return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "잘못된 아이디 또는 비밀번호"));
 	}
-	
-	// 기타 예외 처리
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> otherExHandle(Exception e) {
-        log.error("[exceptionHandle] ex", e);
-        return ApiResponse.badRequest(new ErrorDto(ErrorCode.COMMON_ERROR, e.getMessage()));
-    }
+
 	
 }
