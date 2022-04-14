@@ -1,5 +1,6 @@
 package mjucapstone.wiseculture.member.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -51,7 +52,26 @@ public class MemberService {
     	return member;
     }
     
+    // 회원 수정
+    @Transactional
+    public Member modifyMember(Member member) {
+    	memberRepository.save(member);
+    	return member;
+    }
     
+    // 아이디 찾기
+    public List<String> findUserId(String email, String name) {
+    	
+    	// 사용자 찾기
+    	List<Member> memberList = memberRepository.findByEmailAndName(email, name);
+    	
+    	// 아이디만 가져오기
+    	List<String> userIDList = new ArrayList<>();
+    	memberList.forEach(m -> userIDList.add(m.getUserId()));
+    	
+    	return userIDList;
+    	
+    }
 
 
 }

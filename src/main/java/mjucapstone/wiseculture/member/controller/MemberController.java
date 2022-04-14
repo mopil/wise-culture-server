@@ -23,8 +23,11 @@ import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
+import mjucapstone.wiseculture.member.dto.FindIDForm;
+import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
 import mjucapstone.wiseculture.member.exception.LoginException;
+import mjucapstone.wiseculture.member.exception.MemberNotFoundException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -55,12 +58,12 @@ public class MemberController {
     }
     
     
-    
+    /*
     // 회원 목록(직접 테스트시 확인 용)
     @RequestMapping("/users")
     public ResponseEntity<?> getAllUser() {
     	return ApiResponse.success(memberService.getAllMember());
-    }
+    }*/
     
     // 회원 정보
     @RequestMapping("/info")
@@ -79,8 +82,29 @@ public class MemberController {
     // ==========<회원 정보 수정>==========
     // 닉네임 수정
     @PostMapping("/change/nickname")
-    public ResponseEntity<?> changeNickname() {
-    	return null;
+    public ResponseEntity<?> changeNickname(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	
+    	// 중복 체크
+    	if(memberService.nicknameCheck(form.getNickname()) == true)
+    		return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "이미 사용중인 닉네임"));
+    	
+    	// 로그인 확인
+    	if(loginService.checkLogin(request, form.getId()) == false)
+    		return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "다른 사용자의 정보를 변경할 수 없음"));
+    	
+    	// 멤버 찾기
+    	Member member = memberService.findMember(form.getId());
+    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
+    	
+    	// 닉네임 변경
+    	member.setNickname(form.getNickname());
+    	memberService.modifyMember(member);
+    	
+        return ApiResponse.success(form);
     }
     // 비밀번호 수정
     @PostMapping("/change/password")
@@ -90,9 +114,14 @@ public class MemberController {
     // =================================
     
     // 아이디 찾기
-    @PostMapping("/find/userID")
-    public ResponseEntity<?> findUserID() {
-    	return null;
+    @PostMapping("/find")
+    public ResponseEntity<?> findUserID(@Valid @RequestBody FindIDForm form, BindingResult bindingResult) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	
+    	return ApiResponse.success(memberService.findUserId(form.getEmail(), form.getName()));
     }
     
     // 회원 탈퇴
