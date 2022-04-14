@@ -30,7 +30,9 @@ public class Member {
     @Setter
     private String nickname;
     
+    @Setter
     private String password;
+    
     private int point;
 
     @Column(name = "phone")

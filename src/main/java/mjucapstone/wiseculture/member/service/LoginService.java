@@ -48,7 +48,7 @@ public class LoginService {
 		if(member == null) return false;
 		
 		// 암호가 올바른지 확인
-		return EncryptManager.check(userID, password);
+		return EncryptManager.check(password, member.getPassword());
 	}
 	
 	// 로그인 확인
