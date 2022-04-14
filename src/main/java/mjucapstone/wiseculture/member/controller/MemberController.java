@@ -87,6 +87,7 @@ public class MemberController {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
         }
+    	if(form.getNickname() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "닉네임이 입력되지 않음"));
     	
     	// 중복 체크
     	if(memberService.nicknameCheck(form.getNickname()) == true)
