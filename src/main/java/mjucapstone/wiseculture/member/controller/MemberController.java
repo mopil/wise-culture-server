@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,6 @@ import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
 import mjucapstone.wiseculture.member.exception.LoginException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
-import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.member.service.MemberService;
 
 @RestController
@@ -81,7 +81,7 @@ public class MemberController {
     	
     	memberService.changeNickname(form, request);
     	
-        return ApiResponse.success(form);
+        return ApiResponse.success(true);
     }
     // 비밀번호 수정
     @PostMapping("/change/password")
@@ -95,12 +95,12 @@ public class MemberController {
     	
     	memberService.changePassword(form, request);
     	
-        return ApiResponse.success(form);
+        return ApiResponse.success(true);
     }
     // =================================
     
     // 아이디 찾기
-    @PostMapping("/find")
+    @PostMapping("/user-id")
     public ResponseEntity<?> findUserID(@Valid @RequestBody FindIDForm form, BindingResult bindingResult) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
@@ -111,7 +111,7 @@ public class MemberController {
     }
     
     // 회원 탈퇴
-    @PostMapping("/delete")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
@@ -121,7 +121,7 @@ public class MemberController {
     	
     	memberService.delete(form, request);
     	
-    	return ApiResponse.success(form);
+    	return ApiResponse.success(true);
     }
 
     /**

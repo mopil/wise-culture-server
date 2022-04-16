@@ -90,10 +90,10 @@ public class MemberService {
     	List<Member> memberList = memberRepository.findByEmailAndName(email, name);
     	
     	// 아이디만 가져오기
-    	List<String> userIDList = new ArrayList<>();
-    	memberList.forEach(m -> userIDList.add(m.getUserId()));
+    	List<String> userIdList = new ArrayList<>();
+    	memberList.forEach(m -> userIdList.add(m.getUserId()));
     	
-    	return userIDList;
+    	return userIdList;
     	
     }
     
@@ -117,8 +117,9 @@ public class MemberService {
     	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
     	
     	// 닉네임 변경
-    	member.setNickname(form.getNickname());
-    	memberRepository.save(member);
+    	//member.setNickname(form.getNickname());
+    	//memberRepository.save(member);
+    	memberRepository.updateNickname(member.getId(), form.getNickname());
     	
     }
     
@@ -140,8 +141,9 @@ public class MemberService {
     	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
     	
     	// 비밀번호 변경
-    	member.setPassword(EncryptManager.hash(form.getNewPassword()));
-    	memberRepository.save(member);
+    	//member.setPassword(EncryptManager.hash(form.getNewPassword()));
+    	//memberRepository.save(member);
+    	memberRepository.updatePassword(member.getId(), EncryptManager.hash(form.getNewPassword()));
     	
     }
     

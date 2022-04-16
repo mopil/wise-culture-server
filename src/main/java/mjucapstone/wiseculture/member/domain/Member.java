@@ -26,11 +26,7 @@ public class Member {
 
     private String email;
     private String name;
-    
-    @Setter
     private String nickname;
-    
-    @Setter
     private String password;
     
     private int point;
