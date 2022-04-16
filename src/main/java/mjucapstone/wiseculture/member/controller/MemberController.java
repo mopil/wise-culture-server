@@ -56,12 +56,12 @@ public class MemberController {
     }
     
     
-    
+    /*
     // 회원 목록(직접 테스트시 확인 용)
     @RequestMapping("/users")
     public ResponseEntity<?> getAllUser() {
     	return ApiResponse.success(memberService.getAllMember());
-    }
+    }*/
     
     // 회원 정보
     @RequestMapping("/info")
