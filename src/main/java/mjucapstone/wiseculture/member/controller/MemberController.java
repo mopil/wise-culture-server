@@ -126,8 +126,6 @@ public class MemberController {
 
     /**
      *  예외 처리
-     *  스프링에서 예외를 처리하는 방법입니다. 예외가 던져지면 WAS까지 올라가는데 컨트롤러에서 잡아줘야 합니다.
-     *  자세한건 스프링 REST API 예외처리 검색하면 나옵니다.
      */
     // 중복 회원
     @ExceptionHandler(SignUpException.class)
@@ -136,7 +134,8 @@ public class MemberController {
         log.error("[exceptionHandle] ex", e);
         return ApiResponse.badRequest(new ErrorDto(ErrorCode.SIGN_UP_ERROR, e.getMessage()));
     }
-    
+  
+
 	// 로그인 안 된 경우 예외 처리
  	@ExceptionHandler(LoginException.class)
  	@ResponseStatus(code = HttpStatus.FORBIDDEN)
@@ -152,6 +151,7 @@ public class MemberController {
         log.error("[exceptionHandle] ex", e);
         return ApiResponse.badRequest(new ErrorDto(ErrorCode.COMMON_ERROR, e.getMessage()));
     }
+
 
 
 }
