@@ -8,6 +8,9 @@ import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
+import mjucapstone.wiseculture.member.dto.FindIDForm;
+import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
+import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.MemberService;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -46,14 +50,6 @@ public class MemberController {
         return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
     }
 
-
-    /*
-    // 회원 목록(직접 테스트시 확인 용)
-    @RequestMapping("/users")
-    public ResponseEntity<?> getAllUser() {
-    	return ApiResponse.success(memberService.getAllMember());
-    }*/
-
     // 회원 정보
     @RequestMapping("/info")
     public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
@@ -74,6 +70,7 @@ public class MemberController {
 
         return ApiResponse.success(true);
     }
+
     // 비밀번호 수정
     @PostMapping("/change/password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
@@ -88,8 +85,6 @@ public class MemberController {
 
         return ApiResponse.success(true);
     }
-    // =================================
-
     // 아이디 찾기
     @PostMapping("/user-id")
     public ResponseEntity<?> findUserID(@Valid @RequestBody FindIDForm form, BindingResult bindingResult) {
