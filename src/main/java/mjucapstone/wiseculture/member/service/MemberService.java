@@ -50,7 +50,7 @@ public class MemberService {
     
     
     
-    // 회원 목록(직접 테스트시 확인 용)
+    // 전체 회원 목록
     public List<Member> getAllMember() {
     	return memberRepository.findAll();
     }
@@ -62,7 +62,7 @@ public class MemberService {
     	return member;
     }
     
-    // 현재 회원 조회
+    // 현재 회원 정보 조회
     public Member findMember(HttpServletRequest request) {
     	
     	// 현재 로그인된 사용자 확인
