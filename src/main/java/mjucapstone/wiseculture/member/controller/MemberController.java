@@ -27,7 +27,6 @@ import mjucapstone.wiseculture.member.dto.FindIDForm;
 import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
 import mjucapstone.wiseculture.member.exception.LoginException;
-import mjucapstone.wiseculture.member.exception.MemberNotFoundException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -39,7 +38,6 @@ import mjucapstone.wiseculture.member.service.MemberService;
 public class MemberController {
 
     private final MemberService memberService;
-    private final LoginService loginService;
 
     @PostMapping("/new")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpForm form, BindingResult bindingResult) throws Exception {
@@ -58,12 +56,12 @@ public class MemberController {
     }
     
     
-    /*
+    
     // 회원 목록(직접 테스트시 확인 용)
     @RequestMapping("/users")
     public ResponseEntity<?> getAllUser() {
     	return ApiResponse.success(memberService.getAllMember());
-    }*/
+    }
     
     // 회원 정보
     @RequestMapping("/info")
@@ -146,8 +144,16 @@ public class MemberController {
     
     // 회원 탈퇴
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteUser() {
-    	return null;
+    public ResponseEntity<?> deleteUser(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
+    	
+    	memberService.delete(form, request);
+    	
+    	return ApiResponse.success(form);
     }
 
     /**

@@ -107,12 +107,10 @@ public class MemberService {
     	// 중복 체크
     	if(this.nicknameCheck(form.getNickname()) == true)
     		throw new ModifyDeniedException("이미 사용중인 닉네임");
-    		//return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "이미 사용중인 닉네임"));
     	
     	// 로그인 확인
     	if(loginService.checkLogin(request, form.getId()) == false)
     		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
-    		//return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "다른 사용자의 정보를 변경할 수 없음"));
     	
     	// 멤버 찾기
     	Member member = this.findMember(form.getId());
@@ -142,9 +140,29 @@ public class MemberService {
     	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
     	
     	// 비밀번호 변경
-    	//member.setPassword(form.getNewPassword());
     	member.setPassword(EncryptManager.hash(form.getNewPassword()));
     	memberRepository.save(member);
+    	
+    }
+    
+    // 회원 삭제
+    @Transactional
+    public void delete(ModifyMemberForm form, HttpServletRequest request) {
+    	
+    	if(form.getCurPassword() == null) throw new ModifyDeniedException("현재 비밀번호가 입력되지 않음");
+    	
+    	// 로그인 확인
+    	if(loginService.checkLogin(request, form.getId()) == false)
+    		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
+    	if(loginService.checkPassword(form.getId(), form.getCurPassword()) == false)
+    		throw new ModifyDeniedException("잘못된 비밀번호");
+    	
+    	// 멤버 찾기
+    	Member member = this.findMember(form.getId());
+    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
+    	
+    	// 회원 삭제
+    	memberRepository.delete(member);
     	
     }
 
