@@ -8,7 +8,6 @@ import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.MemberService;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
@@ -45,6 +44,75 @@ public class MemberController {
     @GetMapping("/nickname-check/{nickname}")
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname) {
         return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
+    }
+
+
+    /*
+    // 회원 목록(직접 테스트시 확인 용)
+    @RequestMapping("/users")
+    public ResponseEntity<?> getAllUser() {
+    	return ApiResponse.success(memberService.getAllMember());
+    }*/
+
+    // 회원 정보
+    @RequestMapping("/info")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
+    	return ApiResponse.success(memberService.findMember(request));
+    }
+
+    // ==========<회원 정보 수정>==========
+    // 닉네임 수정
+    @PostMapping("/change/nickname")
+    public ResponseEntity<?> changeNickname(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	if(form.getNickname() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "닉네임이 입력되지 않음"));
+
+    	memberService.changeNickname(form, request);
+
+        return ApiResponse.success(true);
+    }
+    // 비밀번호 수정
+    @PostMapping("/change/password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	if(form.getNewPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "새 비밀번호가 입력되지 않음"));
+    	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
+
+    	memberService.changePassword(form, request);
+
+        return ApiResponse.success(true);
+    }
+    // =================================
+
+    // 아이디 찾기
+    @PostMapping("/user-id")
+    public ResponseEntity<?> findUserID(@Valid @RequestBody FindIDForm form, BindingResult bindingResult) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+
+    	return ApiResponse.success(memberService.findUserId(form.getEmail(), form.getName()));
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@Valid @RequestBody ModifyMemberForm form, BindingResult bindingResult, HttpServletRequest request) {
+    	if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+    	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
+
+    	memberService.delete(form, request);
+
+    	return ApiResponse.success(true);
     }
 
     /**

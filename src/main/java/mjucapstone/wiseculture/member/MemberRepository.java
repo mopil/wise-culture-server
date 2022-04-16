@@ -13,9 +13,14 @@ public interface MemberRepository extends JpaRepository <Member, Long>{
     boolean existsByName(String name);
     boolean existsByNickname(String nickname);
     Member findByUserId(String userId);
+    List<Member> findByEmailAndName(String email, String name);
+    List<String> findUserIdByEmailAndName(String email, String name);
 
-    // 비밀번호 변경
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Member m SET m.nickname = :newNickname WHERE m.id = :id")
+    void updateNickname(@Param("id") Long id, @Param("newNickname") String newNickname);
+
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Member m SET m.password = :newEncryptedPassword WHERE m.id = :id")
-    void updatePassword(Long id, String newEncryptedPassword);
+    void updatePassword(@Param("id") Long id, @Param("newEncryptedPassword") String newEncryptedPassword);
 }
