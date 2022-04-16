@@ -16,4 +16,7 @@ public class ErrorCode {
     // 로그인 오류
     public static final String LOGIN_FAILED = "login";
 
+    // 회원 CRUD 오류
+    public static final String MEMBER_CRUD_ERROR = "member";
+
 }
