@@ -5,25 +5,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
-
-import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.common.EncryptManager;
-import mjucapstone.wiseculture.common.EncryptManager;
-import mjucapstone.wiseculture.common.dto.ApiResponse;
-import mjucapstone.wiseculture.common.dto.ErrorDto;
-import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.MemberRepository;
-import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
-import mjucapstone.wiseculture.member.exception.MemberNotFoundException;
+import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.ModifyDeniedException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import mjucapstone.wiseculture.common.EncryptManager;
+import mjucapstone.wiseculture.member.domain.Member;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,7 +32,7 @@ public class MemberService {
     @Transactional
     public Member signUp(Member member) {
         if (memberRepository.existsByName(member.getName())) {
-            throw new SignUpException("이미 존재하는 회원입니다.");
+            throw new SignUpException("이미 존재하는 회원입니다");
         }
         memberRepository.save(member);
         return member;
@@ -57,10 +49,14 @@ public class MemberService {
      * 비밀번호 재설정
      */
     @Transactional
-    public Member passwordReset(Long memberId) {
+    public Member passwordReset(Long memberId, HttpServletRequest request) {
+
+        // 로그인 체크
+
+
         // 이메일 주소 조회를 위한 디비에서 회원 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException("디비 회원 조회 실패."));
+                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
 
         // 넘어온 PK에 해당되는 멤버의 이메일 주소로 임시 비밀번호 메일 전송
         String tempPassword = emailService.sendPasswordResetMail(member.getEmail());
@@ -72,42 +68,26 @@ public class MemberService {
         return member;
     }
 
-
-
-
     // 전체 회원 목록
     public List<Member> getAllMember() {
     	return memberRepository.findAll();
     }
 
     // 회원 조회
-    public Member findMember(String userID) throws MemberNotFoundException {
-    	Member member = memberRepository.findByUserId(userID);
-    	if(member == null) throw new MemberNotFoundException(userID);
-    	return member;
+    public Member findMember(String userID) throws MemberException {
+    	return memberRepository.findByUserId(userID)
+                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
     }
 
     // 현재 회원 정보 조회
     public Member findMember(HttpServletRequest request) {
 
-    	// 현재 로그인된 사용자 확인
-    	Member member = loginService.checkLogin(request);
-
-    	// 현재 로그인된 사용자 정보 가져오기
-    	member = this.findMember(member.getUserId());
-    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
-
-    	return member;
+        // 현재 로그인된 사용자 정보 가져오기
+    	Member loginMember = loginService.checkLogin(request);
+    	return findMember(loginMember.getUserId());
 
     }
-
-    // 회원 수정
-    @Transactional
-    public Member modifyMember(Member member) {
-    	memberRepository.save(member);
-    	return member;
-    }
-
+    
     // 아이디 찾기
     public List<String> findUserId(String email, String name) {
 
@@ -124,72 +104,53 @@ public class MemberService {
 
     // 닉네임 변경
     @Transactional
-    public void changeNickname(ModifyMemberForm form, HttpServletRequest request) {
-
-    	if(form.getNickname() == null)
-    		throw new ModifyDeniedException("닉네임이 입력되지 않음");
-
+    public void changeNickname(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
+        
     	// 중복 체크
-    	if(this.nicknameCheck(form.getNickname()) == true)
+    	if(nicknameCheck(form.getNickname()))
     		throw new ModifyDeniedException("이미 사용중인 닉네임");
 
     	// 로그인 확인
-    	if(loginService.checkLogin(request, form.getId()) == false)
+    	if(!loginService.checkLogin(request, form.getId()))
     		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
 
-    	// 멤버 찾기
-    	Member member = this.findMember(form.getId());
-    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
-
-    	// 닉네임 변경
-    	//member.setNickname(form.getNickname());
-    	//memberRepository.save(member);
-    	memberRepository.updateNickname(member.getId(), form.getNickname());
+    	memberRepository.updateNickname(memberId, form.getNickname());
 
     }
 
     // 비밀번호 변경
     @Transactional
-    public void changePassword(ModifyMemberForm form, HttpServletRequest request) {
-
-    	if(form.getNewPassword() == null) throw new ModifyDeniedException("새 비밀번호가 입력되지 않음");
-    	if(form.getCurPassword() == null) throw new ModifyDeniedException("현재 비밀번호가 입력되지 않음");
-
-    	// 로그인 확인
-    	if(loginService.checkLogin(request, form.getId()) == false)
+    public void changePassword(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
+    	
+        // 로그인 확인
+    	if(!loginService.checkLogin(request, form.getId()))
     		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
-    	if(loginService.checkPassword(form.getId(), form.getCurPassword()) == false)
+
+        // 현재 폼에 입력된 비밀번호 확인
+    	if(!loginService.checkPassword(form.getId(), form.getCurPassword()))
     		throw new ModifyDeniedException("잘못된 비밀번호");
 
-    	// 멤버 찾기
-    	Member member = this.findMember(form.getId());
-    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
-
     	// 비밀번호 변경
-    	//member.setPassword(EncryptManager.hash(form.getNewPassword()));
-    	//memberRepository.save(member);
-    	memberRepository.updatePassword(member.getId(), EncryptManager.hash(form.getNewPassword()));
+    	memberRepository.updatePassword(memberId, EncryptManager.hash(form.getNewPassword()));
 
     }
 
     // 회원 삭제
     @Transactional
-    public void delete(ModifyMemberForm form, HttpServletRequest request) {
+    public void delete(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
 
     	if(form.getCurPassword() == null) throw new ModifyDeniedException("현재 비밀번호가 입력되지 않음");
 
     	// 로그인 확인
-    	if(loginService.checkLogin(request, form.getId()) == false)
+    	if(!loginService.checkLogin(request, form.getId()))
     		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
-    	if(loginService.checkPassword(form.getId(), form.getCurPassword()) == false)
+
+        // 현재 폼에 입력된 비밀번호 확인
+    	if(!loginService.checkPassword(form.getId(), form.getCurPassword()))
     		throw new ModifyDeniedException("잘못된 비밀번호");
 
-    	// 멤버 찾기
-    	Member member = this.findMember(form.getId());
-    	if(member == null) throw new MemberNotFoundException("사용자가 존재하지 않음");
-
     	// 회원 삭제
-    	memberRepository.delete(member);
+    	memberRepository.deleteById(memberId);
 
     }
 

@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import mjucapstone.wiseculture.member.dto.LoginForm;
+import mjucapstone.wiseculture.member.service.LoginService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,9 +22,6 @@ import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.common.error.ErrorCode;
 import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.member.dto.LoginForm;
-import mjucapstone.wiseculture.member.exception.LoginException;
-import mjucapstone.wiseculture.member.service.LoginService;
 
 @RestController
 @Slf4j
@@ -52,7 +51,7 @@ public class LoginController {
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request) {
 		loginService.logout(request);
-		return ApiResponse.success(null);
+		return ApiResponse.success(true);
 	}
 	
 	

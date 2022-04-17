@@ -9,13 +9,14 @@ import org.springframework.stereotype.Repository;
 import mjucapstone.wiseculture.member.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository <Member, Long>{
 
     boolean existsByName(String name);
     boolean existsByNickname(String nickname);
-    Member findByUserId(String userId);
+    Optional<Member> findByUserId(String userId);
     List<Member> findByEmailAndName(String email, String name);
     List<String> findUserIdByEmailAndName(String email, String name);
 
