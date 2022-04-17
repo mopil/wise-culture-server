@@ -1,10 +1,12 @@
 package mjucapstone.wiseculture.member.controller;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import mjucapstone.wiseculture.member.dto.LoginForm;
+import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.service.LoginService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,9 +58,9 @@ public class LoginController {
 	
 	
 	// 올바르지 않은 ID, PW 예외 처리
-	@ExceptionHandler(LoginException.class)
+	@ExceptionHandler(MemberException.class)
 	@ResponseStatus(code = HttpStatus.FORBIDDEN)
-	public ResponseEntity<?> loginExHandle(LoginException exception) {
+	public ResponseEntity<?> loginExHandle(MemberException exception) {
 		log.error("[exceptionHandle] loginEx", exception);
 		return ApiResponse.forbidden(new ErrorDto(ErrorCode.LOGIN_FAILED, "잘못된 아이디 또는 비밀번호"));
 	}

@@ -1,8 +1,8 @@
 package mjucapstone.wiseculture;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.member.MemberRepository;
 import mjucapstone.wiseculture.member.domain.Member;
+import mjucapstone.wiseculture.member.service.MemberService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -10,8 +10,7 @@ import javax.annotation.PostConstruct;
 @Component
 @RequiredArgsConstructor
 public class InitDummyData {
-
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     
     // 스프링이 띄워질때 자동으로 해당 메서드 실행
     @PostConstruct
@@ -24,7 +23,8 @@ public class InitDummyData {
                 .password("123456")
                 .phoneNumber("010-1234-1234")
                 .build();
-        memberRepository.save(member);
-        
+        memberService.signUp(member);
+
+
     }
 }

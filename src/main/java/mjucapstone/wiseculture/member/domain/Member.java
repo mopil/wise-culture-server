@@ -34,8 +34,8 @@ public class Member {
     @Column(name = "phone")
     private String phoneNumber;
 
-    @OneToMany
-    private List<Location> locationList = new ArrayList<>();
+//    @OneToMany
+//    private List<Location> locationList = new ArrayList<>();
 
     @Builder
     public Member(String userId, String email, String name, String nickname, String password, String phoneNumber) {

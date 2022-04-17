@@ -15,8 +15,8 @@ public class Location {
 	@Column(name = "location_id")
 	private Long id;
 	
-	@OneToMany
-	private List<Member> likedMembers = new ArrayList<>();
+//	@OneToMany
+//	private List<Member> likedMembers = new ArrayList<>();
 	
 	private float latitude;
 	private float longitude;
