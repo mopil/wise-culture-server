@@ -1,11 +1,12 @@
 package mjucapstone.wiseculture.member.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import mjucapstone.wiseculture.member.MemberRepository;
+import mjucapstone.wiseculture.member.dto.ChangePasswordForm;
+import mjucapstone.wiseculture.member.dto.DeleteMemberForm;
 import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
 import mjucapstone.wiseculture.member.dto.PasswordResetForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.common.EncryptManager;
+import mjucapstone.wiseculture.common.login.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 
 @Service
@@ -84,36 +85,23 @@ public class MemberService {
      */
     // 닉네임 변경
     @Transactional
-    public Member changeNickname(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
-        
-    	// 중복 체크
-    	if(nicknameCheck(form.getNickname()))
-    		throw new ModifyDeniedException("이미 사용중인 닉네임");
-
-    	// 로그인 확인
-    	if(!loginService.checkLogin(request, form.getId()))
-    		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
-
-    	memberRepository.updateNickname(memberId, form.getNickname());
-        return findById(memberId);
+    public Member changeNickname(Member loginMember, String newNickname) {
+    	memberRepository.updateNickname(loginMember.getId(), newNickname);
+        return findById(loginMember.getId());
 
     }
 
     // 비밀번호 변경
     @Transactional
-    public Member changePassword(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
-    	
-        // 로그인 확인
-    	if(!loginService.checkLogin(request, form.getId()))
-    		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
+    public Member changePassword(Member loginMember, ChangePasswordForm form) {
 
-        // 현재 폼에 입력된 비밀번호 확인
-    	if(!loginService.checkPassword(form.getId(), form.getCurPassword()))
-    		throw new ModifyDeniedException("잘못된 비밀번호");
+        // 현재 비밀번호를 제대로 입력했는지 확인
+        boolean currentPasswordCheck = EncryptManager.check(form.getCurrentPassword(), loginMember.getPassword());
+        if (!currentPasswordCheck) throw new ModifyDeniedException("현재 비밀번호가 틀립니다");
 
     	// 비밀번호 변경
-    	memberRepository.updatePassword(memberId, EncryptManager.hash(form.getNewPassword()));
-        return findById(memberId);
+    	memberRepository.updatePassword(loginMember.getId(), EncryptManager.hash(form.getNewPassword()));
+        return findById(loginMember.getId());
 
     }
 
@@ -121,20 +109,23 @@ public class MemberService {
      * 회원 삭제
      */
     @Transactional
-    public void delete(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
-
-    	if(form.getCurPassword() == null) throw new ModifyDeniedException("현재 비밀번호가 입력되지 않음");
-
-    	// 로그인 확인
-    	if(!loginService.checkLogin(request, form.getId()))
-    		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
-
-        // 현재 폼에 입력된 비밀번호 확인
-    	if(!loginService.checkPassword(form.getId(), form.getCurPassword()))
-    		throw new ModifyDeniedException("잘못된 비밀번호");
+    public void delete(Member loginMember, DeleteMemberForm form, HttpServletRequest request) {
+        
+        // 폼의 비밀번호와 비밀번호 확인이 같은지 체크
+        if (!form.getPassword().equals(form.getPasswordCheck())) {
+            throw new ModifyDeniedException("비밀번호와 비밀번호 확인이 서로 다름");
+        }
+        
+        // 로그인된 사용자 비밀번호와 현재 폼에 입력된 비밀번호가 같은지 체크
+        if (!EncryptManager.check(form.getPassword(), loginMember.getPassword())) {
+            throw new ModifyDeniedException("잘못된 비밀번호");
+        }
+        
+        // 해당 사용자 로그아웃
+        loginService.logout(request);
 
     	// 회원 삭제
-    	memberRepository.deleteById(memberId);
+    	memberRepository.deleteById(loginMember.getId());
 
     }
 

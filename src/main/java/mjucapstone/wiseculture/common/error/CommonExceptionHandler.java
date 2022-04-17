@@ -1,9 +1,8 @@
-package mjucapstone.wiseculture.common;
+package mjucapstone.wiseculture.common.error;
 
 import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.common.dto.ApiResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
-import mjucapstone.wiseculture.common.error.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

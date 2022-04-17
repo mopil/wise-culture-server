@@ -2,19 +2,18 @@ package mjucapstone.wiseculture.member.service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import mjucapstone.wiseculture.common.login.SessionConst;
 import mjucapstone.wiseculture.member.MemberRepository;
 import mjucapstone.wiseculture.member.dto.LoginForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.common.EncryptManager;
+import mjucapstone.wiseculture.common.login.EncryptManager;
 import mjucapstone.wiseculture.common.SessionManager;
 import mjucapstone.wiseculture.member.domain.Member;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +21,11 @@ public class LoginService {
 	
 	private final SessionManager sessionManager;
 	private final MemberRepository memberRepository;
-	
-	// 로그인
-	public Member login(LoginForm loginForm, HttpServletResponse httpServletResponse) throws MemberException {
+
+	/**
+	 * 로그인
+	 */
+	public Member login(LoginForm loginForm, HttpServletRequest request) throws MemberException {
 		
 		// 사용자 ID로 사용자 찾기
 		Member member = memberRepository.findByUserId(loginForm.getUserId())
@@ -33,10 +34,24 @@ public class LoginService {
 		// ID, PW가 잘못된 경우 예외 발생
 		if(!EncryptManager.check(loginForm.getPassword(), member.getPassword())) throw new MemberException("올바르지 않은 비밀번호");
 		
-		// 세션 생성
-		sessionManager.createSession(member, httpServletResponse);
-		
+		// 세션 생성, true 로 넘기면 새로운 세션을 생성함
+		HttpSession session = request.getSession(true);
+
+		// 세션에 로그인 회원 정보 보관
+		session.setAttribute(SessionConst.LOGIN_MEMBER, member);
 		return member;
+	}
+
+	/**
+	 * 로그아웃
+	 */
+	public void logout(HttpServletRequest request) {
+		// false 로 넘기면 기존 세션을 가져옴
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			// 세션 강제 만료시키기
+			session.invalidate();
+		}
 	}
 	
 	// 사용자의 password 확인 
@@ -68,9 +83,6 @@ public class LoginService {
 		return member;
 	}
 
-	// 로그아웃
-	public void logout(HttpServletRequest httpServletRequest) {
-		sessionManager.expire(httpServletRequest);
-	}
+
 	
 }

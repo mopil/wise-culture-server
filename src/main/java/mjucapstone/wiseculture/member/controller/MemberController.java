@@ -3,14 +3,12 @@ package mjucapstone.wiseculture.member.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.common.dto.ApiResponse;
-import mjucapstone.wiseculture.common.EncryptManager;
+import mjucapstone.wiseculture.common.login.EncryptManager;
 import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.common.dto.ErrorDto;
+import mjucapstone.wiseculture.common.login.Login;
 import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.member.dto.FindIdForm;
-import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
-import mjucapstone.wiseculture.member.dto.PasswordResetForm;
-import mjucapstone.wiseculture.member.dto.SignUpForm;
+import mjucapstone.wiseculture.member.dto.*;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -69,56 +67,40 @@ public class MemberController {
      * 회원 수정
      */
     // 닉네임 수정
-    @PutMapping("/{id}/nickname")
-    public ResponseEntity<?> changeNickname(@Valid @RequestBody ModifyMemberForm form,
-                                            BindingResult bindingResult, 
-                                            HttpServletRequest request,
-                                            @PathVariable("id") Long memberId) {
-    	if (bindingResult.hasErrors()) {
-            log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
-        }
-    	if(form.getNickname() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "닉네임이 입력되지 않음"));
-
-        Member updatedMember = memberService.changeNickname(memberId, form, request);
-
+    @PutMapping("/nickname/{newNickname}")
+    public ResponseEntity<?> changeNickname(@Login Member loginMember, @PathVariable String newNickname) {
+        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
+        Member updatedMember = memberService.changeNickname(loginMember, newNickname);
         return ApiResponse.success(updatedMember);
     }
 
     // 비밀번호 수정
-    @PutMapping("/{id}/password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ModifyMemberForm form,
+    @PutMapping("/password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form,
                                             BindingResult bindingResult,
-                                            HttpServletRequest request,
-                                            @PathVariable("id") Long memberId) {
+                                            @Login Member loginMember) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
         }
-    	if(form.getNewPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "새 비밀번호가 입력되지 않음"));
-    	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
-
-        Member updatedMember = memberService.changePassword(memberId, form, request);
-
+        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
+        Member updatedMember = memberService.changePassword(loginMember, form);
         return ApiResponse.success(updatedMember);
     }
 
     /**
      * 회원 탈퇴
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@Valid @RequestBody ModifyMemberForm form,
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteMember(@Valid @RequestBody DeleteMemberForm form,
                                         BindingResult bindingResult,
-                                        HttpServletRequest request,
-                                        @PathVariable("id") Long memberId) {
+                                        @Login Member loginMember, HttpServletRequest request) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
         }
-    	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
-
-    	memberService.delete(memberId, form, request);
-
+        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
+    	memberService.delete(loginMember, form, request);
     	return ApiResponse.success(new BoolResponse(true));
     }
 
@@ -156,7 +138,7 @@ public class MemberController {
     // 기타 회원 CRUD 오류
     @ExceptionHandler(MemberException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> otherMemberExHandle(SignUpException e) {
+    public ResponseEntity<?> otherMemberExHandle(MemberException e) {
         log.error("[exceptionHandle] ex", e);
         return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, e.getMessage()));
     }
