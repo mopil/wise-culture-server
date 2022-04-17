@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import mjucapstone.wiseculture.common.dto.BoolResponse;
 import mjucapstone.wiseculture.member.dto.LoginForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.service.LoginService;
@@ -53,7 +54,7 @@ public class LoginController {
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request) {
 		loginService.logout(request);
-		return ApiResponse.success(true);
+		return ApiResponse.success(new BoolResponse(true));
 	}
 	
 	

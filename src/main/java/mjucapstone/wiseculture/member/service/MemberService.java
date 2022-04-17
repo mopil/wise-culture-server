@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import mjucapstone.wiseculture.member.MemberRepository;
 import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
+import mjucapstone.wiseculture.member.dto.PasswordResetForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.ModifyDeniedException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
@@ -27,7 +28,7 @@ public class MemberService {
     private final LoginService loginService;
 
     /**
-     * 회원가입
+     * 회원 가입
      */
     @Transactional
     public Member signUp(Member member) {
@@ -38,44 +39,33 @@ public class MemberService {
         return member;
     }
 
-    /**
-     * 닉네임 중복 체크
-     */
+    // 회원가입 : 닉네임 중복 체크
     public boolean nicknameCheck(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
 
-    /**
-     * 비밀번호 재설정
-     */
-    @Transactional
-    public Member passwordReset(Long memberId, HttpServletRequest request) {
-
-        // 로그인 체크
-
-
-        // 이메일 주소 조회를 위한 디비에서 회원 조회
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
-
-        // 넘어온 PK에 해당되는 멤버의 이메일 주소로 임시 비밀번호 메일 전송
-        String tempPassword = emailService.sendPasswordResetMail(member.getEmail());
-
-        // 해당 임시 비밀번호로 해당 멤버의 비밀번호를 암호화해서 디비에 업데이트
-        memberRepository.updatePassword(memberId, EncryptManager.hash(tempPassword));
-
-        // 비밀번호 재설정된 멤버 객체 리턴
-        return member;
+    // 회원가입 : 유저 아이디 중복 체크
+    public boolean userIdCheck(String userId) {
+        return memberRepository.existsByUserId(userId);
     }
 
+    /**
+     * 회원 조회
+     */
     // 전체 회원 목록
     public List<Member> getAllMember() {
     	return memberRepository.findAll();
     }
 
-    // 회원 조회
+    // 유저 아이디로 회원 하나 조회
     public Member findMember(String userID) throws MemberException {
     	return memberRepository.findByUserId(userID)
+                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
+    }
+
+    // PK로 회원 하나 조회
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
     }
 
@@ -87,24 +77,14 @@ public class MemberService {
     	return findMember(loginMember.getUserId());
 
     }
-    
-    // 아이디 찾기
-    public List<String> findUserId(String email, String name) {
 
-    	// 사용자 찾기
-    	List<Member> memberList = memberRepository.findByEmailAndName(email, name);
 
-    	// 아이디만 가져오기
-    	List<String> userIdList = new ArrayList<>();
-    	memberList.forEach(m -> userIdList.add(m.getUserId()));
-
-    	return userIdList;
-
-    }
-
+    /**
+     * 회원 수정
+     */
     // 닉네임 변경
     @Transactional
-    public void changeNickname(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
+    public Member changeNickname(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
         
     	// 중복 체크
     	if(nicknameCheck(form.getNickname()))
@@ -115,12 +95,13 @@ public class MemberService {
     		throw new ModifyDeniedException("다른 사용자의 정보를 변경할 수 없음");
 
     	memberRepository.updateNickname(memberId, form.getNickname());
+        return findById(memberId);
 
     }
 
     // 비밀번호 변경
     @Transactional
-    public void changePassword(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
+    public Member changePassword(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
     	
         // 로그인 확인
     	if(!loginService.checkLogin(request, form.getId()))
@@ -132,10 +113,13 @@ public class MemberService {
 
     	// 비밀번호 변경
     	memberRepository.updatePassword(memberId, EncryptManager.hash(form.getNewPassword()));
+        return findById(memberId);
 
     }
 
-    // 회원 삭제
+    /**
+     * 회원 삭제
+     */
     @Transactional
     public void delete(Long memberId, ModifyMemberForm form, HttpServletRequest request) {
 
@@ -152,6 +136,34 @@ public class MemberService {
     	// 회원 삭제
     	memberRepository.deleteById(memberId);
 
+    }
+
+    /**
+     * 회원 아이디 찾기
+     */
+    public Member findUserId(String email, String name) {
+        return memberRepository.findByEmailAndName(email, name)
+                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
+    }
+
+    /**
+     * 비밀번호 찾기 (재설정)
+     */
+    @Transactional
+    public Member passwordReset(PasswordResetForm form) {
+        
+        // 폼에 적힌 이메일로 디비에서 멤버 조회
+        Member member = memberRepository.findByEmail(form.getEmail())
+                .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
+
+        // 넘어온 PK에 해당되는 멤버의 이메일 주소로 임시 비밀번호 메일 전송
+        String tempPassword = emailService.sendPasswordResetMail(member.getEmail());
+
+        // 해당 임시 비밀번호로 해당 멤버의 비밀번호를 암호화해서 디비에 업데이트
+        memberRepository.updatePassword(member.getId(), EncryptManager.hash(tempPassword));
+
+        // 비밀번호 재설정된 멤버 객체 리턴
+        return member;
     }
 
 

@@ -9,6 +9,7 @@ import mjucapstone.wiseculture.common.dto.ErrorDto;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.FindIdForm;
 import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
+import mjucapstone.wiseculture.member.dto.PasswordResetForm;
 import mjucapstone.wiseculture.member.dto.SignUpForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
@@ -50,12 +51,20 @@ public class MemberController {
         return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
     }
 
-    // 회원 정보
-    @RequestMapping("/info")
-    public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
-    	return ApiResponse.success(memberService.findMember(request));
+    // 회원가입 : 유저 아이디 중복 체크
+    @GetMapping("/id-check/{userId}")
+    public ResponseEntity<?> userIdCheck(@PathVariable String userId) {
+        return ApiResponse.success(new BoolResponse(memberService.userIdCheck(userId)));
     }
 
+    /**
+     * 회원 조회
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        return ApiResponse.success(memberService.findById(id));
+    }
+    
     /**
      * 회원 수정
      */
@@ -64,16 +73,16 @@ public class MemberController {
     public ResponseEntity<?> changeNickname(@Valid @RequestBody ModifyMemberForm form,
                                             BindingResult bindingResult, 
                                             HttpServletRequest request,
-                                            @PathVariable Long memberId) {
+                                            @PathVariable("id") Long memberId) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
         }
     	if(form.getNickname() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "닉네임이 입력되지 않음"));
 
-    	memberService.changeNickname(memberId, form, request);
+        Member updatedMember = memberService.changeNickname(memberId, form, request);
 
-        return ApiResponse.success(true);
+        return ApiResponse.success(updatedMember);
     }
 
     // 비밀번호 수정
@@ -81,7 +90,7 @@ public class MemberController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody ModifyMemberForm form,
                                             BindingResult bindingResult,
                                             HttpServletRequest request,
-                                            @PathVariable Long memberId) {
+                                            @PathVariable("id") Long memberId) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
@@ -89,28 +98,19 @@ public class MemberController {
     	if(form.getNewPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "새 비밀번호가 입력되지 않음"));
     	if(form.getCurPassword() == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.VALIDATION_ERROR, "현재 비밀번호가 입력되지 않음"));
 
-    	memberService.changePassword(memberId, form, request);
+        Member updatedMember = memberService.changePassword(memberId, form, request);
 
-        return ApiResponse.success(true);
-    }
-    
-    // 아이디 찾기
-    @PostMapping("/user-id")
-    public ResponseEntity<?> findUserID(@Valid @RequestBody FindIdForm form, BindingResult bindingResult) {
-    	if (bindingResult.hasErrors()) {
-            log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
-        }
-
-    	return ApiResponse.success(memberService.findUserId(form.getEmail(), form.getName()));
+        return ApiResponse.success(updatedMember);
     }
 
-    // 회원 탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@Valid @RequestBody ModifyMemberForm form,
                                         BindingResult bindingResult,
                                         HttpServletRequest request,
-                                        @PathVariable Long memberId) {
+                                        @PathVariable("id") Long memberId) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
@@ -119,16 +119,27 @@ public class MemberController {
 
     	memberService.delete(memberId, form, request);
 
-    	return ApiResponse.success(true);
+    	return ApiResponse.success(new BoolResponse(true));
     }
 
     /**
-     * 비밀번호 재설정
+     * 아이디 찾기
      */
-    @PostMapping("/{id}/password")
-    public ResponseEntity<?> passwordReset(@PathVariable("id") Long memberId,
-                                           HttpServletRequest request) {
-        return ApiResponse.success(memberService.passwordReset(memberId, request));
+    @GetMapping("/user-id")
+    public ResponseEntity<?> findUserID(@Valid @RequestBody FindIdForm form, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+        }
+        return ApiResponse.success(memberService.findUserId(form.getEmail(), form.getName()));
+    }
+
+    /**
+     * 비밀번호 찾기(강제 재설정)
+     */
+    @PostMapping("/password")
+    public ResponseEntity<?> passwordReset(@RequestBody PasswordResetForm form) {
+        return ApiResponse.success(memberService.passwordReset(form));
     }
 
     /**
