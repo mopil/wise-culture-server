@@ -12,11 +12,14 @@ public class SignUpForm {
 
     @NotEmpty
     @Size(min = 4, max = 10, message = "아이디는 4~10글자 사이로 입력해주세요")
-    private String id;
+    private String userId;
 
     @NotEmpty
     @Size(min = 6, max = 10, message = "비밀번호는 6~10글자 사이로 입력해주세요")
     private String password;
+
+    @NotEmpty
+    private String passwordCheck;
 
     @NotEmpty
     private String name;
@@ -33,7 +36,7 @@ public class SignUpForm {
 
     public Member toMember(String encryptedPassword) {
         return Member.builder()
-                .userId(this.id)
+                .userId(this.userId)
                 .name(this.name)
                 .password(encryptedPassword)
                 .nickname(this.nickname)
