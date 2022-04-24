@@ -5,7 +5,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class LoginForm {
+public class LogInForm {
 	
 	@NotEmpty
 	private String userId;

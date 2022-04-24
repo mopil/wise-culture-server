@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.common.dto;
+package mjucapstone.wiseculture.util.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

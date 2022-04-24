@@ -1,23 +1,19 @@
 package mjucapstone.wiseculture.member.service;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import mjucapstone.wiseculture.member.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import mjucapstone.wiseculture.member.config.EncryptManager;
+import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.ChangePasswordForm;
 import mjucapstone.wiseculture.member.dto.DeleteMemberForm;
-import mjucapstone.wiseculture.member.dto.ModifyMemberForm;
 import mjucapstone.wiseculture.member.dto.PasswordResetForm;
 import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.ModifyDeniedException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
+import mjucapstone.wiseculture.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.common.login.EncryptManager;
-import mjucapstone.wiseculture.member.domain.Member;
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -53,11 +49,6 @@ public class MemberService {
     /**
      * 회원 조회
      */
-    // 전체 회원 목록
-    public List<Member> getAllMember() {
-    	return memberRepository.findAll();
-    }
-
     // 유저 아이디로 회원 하나 조회
     public Member findMember(String userID) throws MemberException {
     	return memberRepository.findByUserId(userID)
@@ -69,16 +60,6 @@ public class MemberService {
         return memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
     }
-
-    // 현재 회원 정보 조회
-    public Member findMember(HttpServletRequest request) {
-
-        // 현재 로그인된 사용자 정보 가져오기
-    	Member loginMember = loginService.checkLogin(request);
-    	return findMember(loginMember.getUserId());
-
-    }
-
 
     /**
      * 회원 수정

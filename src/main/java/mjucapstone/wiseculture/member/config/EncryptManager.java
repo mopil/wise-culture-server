@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.common.login;
+package mjucapstone.wiseculture.member.config;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

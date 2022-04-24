@@ -1,10 +1,13 @@
 package mjucapstone.wiseculture.board;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
 import lombok.Getter;
+import mjucapstone.wiseculture.comment.Comment;
 import org.springframework.data.annotation.CreatedDate;
 
 import mjucapstone.wiseculture.location.Location;
@@ -25,6 +28,9 @@ public class Board {
 	
 	private String content;
 	private int viewCount;
+
+	@OneToMany(mappedBy = "board")
+	private List<Comment> comments = new ArrayList<>();
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")

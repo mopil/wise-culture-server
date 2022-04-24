@@ -2,24 +2,22 @@ package mjucapstone.wiseculture.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.common.dto.ApiResponse;
-import mjucapstone.wiseculture.common.login.EncryptManager;
-import mjucapstone.wiseculture.common.dto.BoolResponse;
-import mjucapstone.wiseculture.common.dto.ErrorDto;
-import mjucapstone.wiseculture.common.login.Login;
+import mjucapstone.wiseculture.member.config.EncryptManager;
+import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.*;
-import mjucapstone.wiseculture.member.exception.MemberException;
-import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.service.MemberService;
-import mjucapstone.wiseculture.common.error.ErrorCode;
-import org.springframework.http.HttpStatus;
+import mjucapstone.wiseculture.util.dto.BoolResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import static mjucapstone.wiseculture.util.dto.ErrorResponse.convertJson;
+import static mjucapstone.wiseculture.util.dto.RestResponse.badRequest;
+import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 
 @RestController
 @Slf4j
@@ -37,22 +35,22 @@ public class MemberController {
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpForm form, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
         Member member = form.toMember(EncryptManager.hash(form.getPassword()));
-        return ApiResponse.success(memberService.signUp(member));
+        return success(memberService.signUp(member));
     }
 
     // 회원가입 : 닉네임 중복 체크
     @GetMapping("/nickname-check/{nickname}")
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname) {
-        return ApiResponse.success(new BoolResponse(memberService.nicknameCheck(nickname)));
+        return success(new BoolResponse(memberService.nicknameCheck(nickname)));
     }
 
     // 회원가입 : 유저 아이디 중복 체크
     @GetMapping("/id-check/{userId}")
     public ResponseEntity<?> userIdCheck(@PathVariable String userId) {
-        return ApiResponse.success(new BoolResponse(memberService.userIdCheck(userId)));
+        return success(new BoolResponse(memberService.userIdCheck(userId)));
     }
 
     /**
@@ -60,7 +58,7 @@ public class MemberController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        return ApiResponse.success(memberService.findById(id));
+        return success(memberService.findById(id));
     }
     
     /**
@@ -69,9 +67,8 @@ public class MemberController {
     // 닉네임 수정
     @PutMapping("/nickname/{newNickname}")
     public ResponseEntity<?> changeNickname(@Login Member loginMember, @PathVariable String newNickname) {
-        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
         Member updatedMember = memberService.changeNickname(loginMember, newNickname);
-        return ApiResponse.success(updatedMember);
+        return success(updatedMember);
     }
 
     // 비밀번호 수정
@@ -81,11 +78,10 @@ public class MemberController {
                                             @Login Member loginMember) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
         Member updatedMember = memberService.changePassword(loginMember, form);
-        return ApiResponse.success(updatedMember);
+        return success(updatedMember);
     }
 
     /**
@@ -97,11 +93,10 @@ public class MemberController {
                                         @Login Member loginMember, HttpServletRequest request) {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-        if (loginMember == null) return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, "로그인이 안됨"));
     	memberService.delete(loginMember, form, request);
-    	return ApiResponse.success(new BoolResponse(true));
+    	return success(new BoolResponse(true));
     }
 
     /**
@@ -111,9 +106,9 @@ public class MemberController {
     public ResponseEntity<?> findUserID(@Valid @RequestBody FindIdForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
-            return ApiResponse.badRequest(ErrorDto.convertJson(bindingResult.getFieldErrors()));
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-        return ApiResponse.success(memberService.findUserId(form.getEmail(), form.getName()));
+        return success(memberService.findUserId(form.getEmail(), form.getName()));
     }
 
     /**
@@ -121,28 +116,7 @@ public class MemberController {
      */
     @PostMapping("/password")
     public ResponseEntity<?> passwordReset(@RequestBody PasswordResetForm form) {
-        return ApiResponse.success(memberService.passwordReset(form));
+        return success(memberService.passwordReset(form));
     }
-
-    /**
-     *  예외 처리
-     */
-    // 회원가입 : 중복 회원
-    @ExceptionHandler(SignUpException.class)
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> signUpExHandle(SignUpException e) {
-        log.error("[exceptionHandle] ex", e);
-        return ApiResponse.badRequest(new ErrorDto(ErrorCode.SIGN_UP_ERROR, e.getMessage()));
-    }
-
-    // 기타 회원 CRUD 오류
-    @ExceptionHandler(MemberException.class)
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> otherMemberExHandle(MemberException e) {
-        log.error("[exceptionHandle] ex", e);
-        return ApiResponse.badRequest(new ErrorDto(ErrorCode.MEMBER_CRUD_ERROR, e.getMessage()));
-    }
-
-
 
 }

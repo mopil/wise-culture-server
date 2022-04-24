@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.common.dto;
+package mjucapstone.wiseculture.util.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 @Getter @AllArgsConstructor
 // 컨트롤러에서 응답을 줄때 이 공용 응답 클래스를 꼭 활용해 주세요 (유지보수를 위해)
-public class ApiResponse<T> {
+public class RestResponse<T> {
 
     public static <T> ResponseEntity<T> success(T body) {
         return ResponseEntity.status(HttpStatus.OK).body(body);

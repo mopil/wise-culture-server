@@ -1,7 +1,6 @@
-package mjucapstone.wiseculture.common.login;
+package mjucapstone.wiseculture.member.config;
 
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.common.login.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -9,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -35,9 +35,8 @@ public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
         HttpSession session = request.getSession(false);
         if (session == null) {
             // 세션이 없으면 그냥 Member 에 null 이 들어감
-            return null;
+            throw new LoginException("인증 거부 : 로그인 안 됨");
         }
-
         // 세션 정보가 있으면 로그인된 회원을 날린다
         return session.getAttribute(SessionConst.LOGIN_MEMBER);
     }

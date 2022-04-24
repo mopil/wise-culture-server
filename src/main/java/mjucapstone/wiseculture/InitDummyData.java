@@ -1,7 +1,7 @@
 package mjucapstone.wiseculture;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.common.login.EncryptManager;
+import mjucapstone.wiseculture.member.config.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.MemberService;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ public class InitDummyData {
                 .email("mopil1102@naver.com")
                 .name("테스트")
                 .nickname("토토로")
-                .userId("mopil1102")
+                .userId("test1234")
                 .password(EncryptManager.hash("123456"))
                 .phoneNumber("010-1234-1234")
                 .build();
