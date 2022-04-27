@@ -40,6 +40,7 @@ public class LoginController {
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
 		Member loginMember = loginService.login(loginForm, request);
+		log.info("로그인 멤버 = {}", loginMember);
 		return success(loginMember);
 	}
 
@@ -49,6 +50,7 @@ public class LoginController {
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request) {
 		loginService.logout(request);
+		log.info("로그아웃 성공");
 		return success(new BoolResponse(true));
 	}
 

@@ -1,20 +1,16 @@
 package mjucapstone.wiseculture.member.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import mjucapstone.wiseculture.location.Location;
 
 @Entity @Getter
+@ToString
 public class Member {
 
     @Id @GeneratedValue

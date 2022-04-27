@@ -38,18 +38,21 @@ public class MemberController {
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
         Member member = form.toMember(EncryptManager.hash(form.getPassword()));
+        log.info("회원가입 성공 : {}", member);
         return success(memberService.signUp(member));
     }
 
     // 회원가입 : 닉네임 중복 체크
     @GetMapping("/nickname-check/{nickname}")
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname) {
+        log.info("닉네임 중복 체크 호출 됨 : {}", nickname);
         return success(new BoolResponse(memberService.nicknameCheck(nickname)));
     }
 
     // 회원가입 : 유저 아이디 중복 체크
     @GetMapping("/id-check/{userId}")
     public ResponseEntity<?> userIdCheck(@PathVariable String userId) {
+        log.info("아이디 중복 체크 호출 됨 : {}", userId);
         return success(new BoolResponse(memberService.userIdCheck(userId)));
     }
 
@@ -58,7 +61,9 @@ public class MemberController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        return success(memberService.findById(id));
+        Member findMember = memberService.findById(id);
+        log.info("디비 PK로 조회된 회원 = {}", findMember);
+        return success(findMember);
     }
     
     /**
@@ -67,7 +72,10 @@ public class MemberController {
     // 닉네임 수정
     @PutMapping("/nickname/{newNickname}")
     public ResponseEntity<?> changeNickname(@Login Member loginMember, @PathVariable String newNickname) {
+        log.info("현재 로그인된 사용자 = {}", loginMember);
+        log.info("변경하고자 하는 새로운 닉네임 = {}", newNickname);
         Member updatedMember = memberService.changeNickname(loginMember, newNickname);
+        log.info("변경된 사용자 정보 = {}", updatedMember);
         return success(updatedMember);
     }
 
@@ -80,7 +88,10 @@ public class MemberController {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
+        log.info("현재 로그인된 사용자 = {}", loginMember);
+        log.info("변경하고자 하는 비밀번호 = {}", form.getNewPassword());
         Member updatedMember = memberService.changePassword(loginMember, form);
+        log.info("변경된 사용자 정보 = {}", updatedMember);
         return success(updatedMember);
     }
 
@@ -95,7 +106,9 @@ public class MemberController {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
+        log.info("현재 로그인된 사용자 = {}", loginMember);
     	memberService.delete(loginMember, form, request);
+        log.info("회원 탈퇴 성공");
     	return success(new BoolResponse(true));
     }
 
@@ -108,7 +121,9 @@ public class MemberController {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-        return success(memberService.findUserId(form.getEmail(), form.getName()));
+        Member findMember = memberService.findUserId(form.getEmail(), form.getName());
+        log.info("아이디 찾기로 찾아진 멤버 = {}", findMember);
+        return success(findMember);
     }
 
     /**
@@ -116,7 +131,9 @@ public class MemberController {
      */
     @PostMapping("/password")
     public ResponseEntity<?> passwordReset(@RequestBody PasswordResetForm form) {
-        return success(memberService.passwordReset(form));
+        Member updatedMember = memberService.passwordReset(form);
+        log.info("비밀번호 찾기(재설정) 완료 = {}", updatedMember);
+        return success(updatedMember);
     }
 
 }
