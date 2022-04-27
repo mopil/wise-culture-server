@@ -1,17 +1,15 @@
 package mjucapstone.wiseculture.board;
 
+import lombok.Getter;
+import mjucapstone.wiseculture.comment.Comment;
+import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.member.domain.Member;
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.*;
-
-import lombok.Getter;
-import mjucapstone.wiseculture.comment.Comment;
-import org.springframework.data.annotation.CreatedDate;
-
-import mjucapstone.wiseculture.location.Location;
-import mjucapstone.wiseculture.member.domain.Member;
 
 @Entity @Getter
 public class Board {
@@ -29,7 +27,7 @@ public class Board {
 	private String content;
 	private int viewCount;
 
-	@OneToMany(mappedBy = "board")
+	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
 	private List<Comment> comments = new ArrayList<>();
 	
 	@ManyToOne(fetch = FetchType.LAZY)
