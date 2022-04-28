@@ -1,16 +1,17 @@
 package mjucapstone.wiseculture.message;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
 public class MessageForm {
 	
-	@NotEmpty
+	@NotNull
 	private Long sender;
 	
-	@NotEmpty
+	@NotNull
 	private Long receiver;
 	
 	@NotEmpty
