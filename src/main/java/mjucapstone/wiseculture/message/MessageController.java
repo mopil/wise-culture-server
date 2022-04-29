@@ -51,6 +51,7 @@ public class MessageController {
 	// 메시지 삭제
 	@DeleteMapping("/{messageId}")
 	public ResponseEntity<?> deleteMessage(@PathVariable Long messageId, @Login Member loginMember) {
+		messageService.delete(messageId, loginMember);
 		return success(new BoolResponse(true));
 	}
 	

@@ -14,14 +14,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import mjucapstone.wiseculture.comment.Comment;
 import mjucapstone.wiseculture.location.Location;
 import mjucapstone.wiseculture.member.domain.Member;
 
+@NoArgsConstructor
 @Entity @Getter
 public class Board {
 	
@@ -31,7 +35,8 @@ public class Board {
 	
 	private String title;
 	
-	@CreatedDate
+	//@CreatedDate
+	@CreationTimestamp
 	@Column(name = "created_at")
 	private LocalDateTime createdDate;
 	
@@ -41,20 +46,24 @@ public class Board {
 	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
 	private List<Comment> comments = new ArrayList<>();
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "location_id")
 	private Location location;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 	
 	@Builder
 	public Board(String title, String content, Location location, Member writer) {
-		this.title 		= title;
-		this.content 	= content;
-		this.location 	= location;
-		this.member 	= writer;
+		this.title		= title;
+		this.content	= content;
+		this.location	= location;
+		this.member		= writer;
+		
+		this.viewCount	= 0;
 	}
 	
 }
