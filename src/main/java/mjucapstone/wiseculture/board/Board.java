@@ -1,15 +1,26 @@
 package mjucapstone.wiseculture.board;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.springframework.data.annotation.CreatedDate;
+
+import lombok.Builder;
 import lombok.Getter;
 import mjucapstone.wiseculture.comment.Comment;
 import mjucapstone.wiseculture.location.Location;
 import mjucapstone.wiseculture.member.domain.Member;
-import org.springframework.data.annotation.CreatedDate;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity @Getter
 public class Board {
@@ -37,4 +48,13 @@ public class Board {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+	
+	@Builder
+	public Board(String title, String content, Location location, Member writer) {
+		this.title 		= title;
+		this.content 	= content;
+		this.location 	= location;
+		this.member 	= writer;
+	}
+	
 }
