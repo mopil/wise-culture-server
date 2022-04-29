@@ -15,9 +15,6 @@ import mjucapstone.wiseculture.member.domain.Member;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 	
-	//@Query("SELECT b.title FROM Board b")
-	//List<String> titleList();
-	//List<BoardSummary> findAll();
 	List<BoardSummary> findAllBy();
 	
 	@Query("SELECT b.member FROM Board b where b.id = :id")

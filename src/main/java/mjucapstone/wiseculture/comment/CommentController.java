@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.board;
+package mjucapstone.wiseculture.comment;
 
 import static mjucapstone.wiseculture.util.dto.ErrorResponse.convertJson;
 import static mjucapstone.wiseculture.util.dto.RestResponse.badRequest;
@@ -25,41 +25,43 @@ import mjucapstone.wiseculture.util.dto.BoolResponse;
 @RestController
 @RequestMapping("/board")
 @RequiredArgsConstructor
-public class BoardController {
+public class CommentController {
 	
-	private final BoardService boardService;
+	private final CommentService commentService;
 	
-	// 게시글 목록 조회
-	@GetMapping("")
-	public ResponseEntity<?> getBoardList() {
-		return success(boardService.getTitleList());
+	// 댓글 조회
+	@GetMapping("/{boardId}/comment")
+	public ResponseEntity<?> getComment(@PathVariable Long boardId) {
+		return success(commentService.getComments(boardId));
 	}
 	
-	// 게시글 내용 조회
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getBoard(@PathVariable Long id) {
-		return success(boardService.getPost(id));
-	}
-	
-	// 게시글 작성
-	@PostMapping("")
-	public ResponseEntity<?> writeBoard(@Valid @RequestBody BoardForm boardForm, BindingResult bindingResult, @Login Member loginMember) {
+	// 댓글 작성
+	@PostMapping("/{boardId}/comment")
+	public ResponseEntity<?> writeComment(@PathVariable Long boardId, 
+			@Valid @RequestBody CommentForm commentForm, 
+			BindingResult bindingResult, @Login Member loginMember) {
+		
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
-		return success(boardService.writePost(boardForm.getTitle(), boardForm.getContent(), boardForm.getLocation(), loginMember));
+		
+		return success(commentService.writeComment(boardId, commentForm.getContent(), loginMember));
 	}
 	
-	// 게시글 수정
-	@PutMapping("/{id}")
-	public ResponseEntity<?> editBoard(@PathVariable Long id, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult, @Login Member loginMember) {
+	// 댓글 수정
+	@PutMapping("/{boardId}/comment/{commentId}")
+	public ResponseEntity<?> editComment(@PathVariable Long boardId, @PathVariable Long commentId, 
+			@Valid @RequestBody CommentForm commentForm, 
+			BindingResult bindingResult, @Login Member loginMember) {
+		
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
-		return success(boardService.editPost(id, boardForm.getTitle(), boardForm.getContent(), boardForm.getLocation(), loginMember));
+		
+		return success(commentService.editComment(commentId, commentForm.getContent(), loginMember));
 	}
 	
-	// 게시글 삭제
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteBoard(@PathVariable Long id, @Login Member loginMember) {
-		boardService.deletePost(id, loginMember);
+	// 댓글 삭제
+	@DeleteMapping("/{boardId}/comment/{commentId}")
+	public ResponseEntity<?> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId, @Login Member loginMember) {
+		commentService.deleteComment(commentId, loginMember);
 		return success(new BoolResponse(true));
 	}
-	
+
 }
