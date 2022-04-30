@@ -1,7 +1,6 @@
 package mjucapstone.wiseculture.member.domain;
 
 import lombok.Getter;
-import mjucapstone.wiseculture.location.Location;
 
 import javax.persistence.*;
 

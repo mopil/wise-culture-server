@@ -2,7 +2,7 @@ package mjucapstone.wiseculture.board;
 
 import lombok.Getter;
 import mjucapstone.wiseculture.comment.Comment;
-import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.springframework.data.annotation.CreatedDate;
 

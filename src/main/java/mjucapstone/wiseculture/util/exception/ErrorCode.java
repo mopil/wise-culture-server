@@ -19,4 +19,7 @@ public class ErrorCode {
     // 회원 CRUD 오류
     public static final String MEMBER_CRUD_ERROR = "member";
 
+    // JSON 파싱 오류
+    public static final String JSON_PARSING_ERROR = "json";
+
 }
