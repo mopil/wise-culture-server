@@ -55,7 +55,8 @@ public class MessageService {
 	@Transactional
 	public void delete(Long id, Member member) {
 		Message message = messageRepository.findById(id).orElseThrow(() -> new MessageException("메시지를 찾을 수 없음"));
-		if(message.getSender() != member && message.getReceiver() != member) throw new MessageException("현재 회원이 보내거나 받은 메시지가 아님");
+		if(message.getSender().getId() != member.getId() && message.getReceiver().getId() != member.getId())
+			throw new MessageException("현재 회원이 보내거나 받은 메시지가 아님");
 		
 		// 메시지 삭제
 		messageRepository.deleteById(id);
