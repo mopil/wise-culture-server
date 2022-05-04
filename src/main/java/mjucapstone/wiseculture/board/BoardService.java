@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.comment.CommentRepository;
-import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.member.domain.Member;
 
 @Service

@@ -3,7 +3,7 @@ package mjucapstone.wiseculture.board;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
-import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.location.domain.Location;
 
 @Data
 public class BoardForm {

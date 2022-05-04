@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import mjucapstone.wiseculture.location.Location;
+import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.member.domain.Member;
 
 @Repository
