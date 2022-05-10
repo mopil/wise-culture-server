@@ -95,6 +95,32 @@ public class MemberController {
         return success(updatedMember);
     }
 
+    // 닉네임 수정 : 로그인 없이
+    @PutMapping("/{memberId}/nickname/{newNickname}")
+    public ResponseEntity<?> changeNickname(@PathVariable Long memberId, @PathVariable String newNickname) {
+        log.info("현재 로그인된 사용자 = {}", memberId);
+        log.info("변경하고자 하는 새로운 닉네임 = {}", newNickname);
+        Member updatedMember = memberService.changeNickname(memberId, newNickname);
+        log.info("변경된 사용자 정보 = {}", updatedMember);
+        return success(updatedMember);
+    }
+
+    // 비밀번호 수정 : 로그인 없이
+    @PutMapping("/{memberId}/password")
+    public ResponseEntity<?> changePassword(@PathVariable Long memberId,
+                                            @Valid @RequestBody ChangePasswordForm form,
+                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
+        }
+        log.info("현재 로그인된 사용자 = {}", memberId);
+        log.info("변경하고자 하는 비밀번호 = {}", form.getNewPassword());
+        Member updatedMember = memberService.changePassword(memberId, form);
+        log.info("변경된 사용자 정보 = {}", updatedMember);
+        return success(updatedMember);
+    }
+
     /**
      * 회원 탈퇴
      */
@@ -110,6 +136,21 @@ public class MemberController {
     	memberService.delete(loginMember, form, request);
         log.info("회원 탈퇴 성공");
     	return success(new BoolResponse(true));
+    }
+
+    // 회원 탈퇴 : 로그인 없이
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long memberId,
+                                          @Valid @RequestBody DeleteMemberForm form,
+                                          BindingResult bindingResult, HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            log.info("Errors = {}", bindingResult.getFieldErrors());
+            return badRequest(convertJson(bindingResult.getFieldErrors()));
+        }
+        log.info("현재 로그인된 사용자 = {}", memberId);
+        memberService.delete(memberId, form, request);
+        log.info("회원 탈퇴 성공");
+        return success(new BoolResponse(true));
     }
 
     /**

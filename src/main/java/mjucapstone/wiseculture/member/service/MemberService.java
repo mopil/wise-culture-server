@@ -86,6 +86,30 @@ public class MemberService {
 
     }
 
+    // 닉네임 변경 : 로그인 없이
+    @Transactional
+    public Member changeNickname(Long memberId, String newNickname) {
+        memberRepository.updateNickname(memberId, newNickname);
+        return findById(memberId);
+
+    }
+
+    // 비밀번호 변경 : 로그인 없이
+    @Transactional
+    public Member changePassword(Long memberId, ChangePasswordForm form) {
+
+        Member member = findById(memberId);
+
+        // 현재 비밀번호를 제대로 입력했는지 확인
+        boolean currentPasswordCheck = EncryptManager.check(form.getCurrentPassword(), member.getPassword());
+        if (!currentPasswordCheck) throw new ModifyDeniedException("현재 비밀번호가 틀립니다");
+
+        // 비밀번호 변경
+        memberRepository.updatePassword(memberId, EncryptManager.hash(form.getNewPassword()));
+        return member;
+
+    }
+
     /**
      * 회원 삭제
      */
@@ -107,6 +131,29 @@ public class MemberService {
 
     	// 회원 삭제
     	memberRepository.deleteById(loginMember.getId());
+
+    }
+
+    // 회원 삭제 : 로그인 없이
+    @Transactional
+    public void delete(Long memberId, DeleteMemberForm form, HttpServletRequest request) {
+        Member member = findById(memberId);
+
+        // 폼의 비밀번호와 비밀번호 확인이 같은지 체크
+        if (!form.getPassword().equals(form.getPasswordCheck())) {
+            throw new ModifyDeniedException("비밀번호와 비밀번호 확인이 서로 다름");
+        }
+
+        // 로그인된 사용자 비밀번호와 현재 폼에 입력된 비밀번호가 같은지 체크
+        if (!EncryptManager.check(form.getPassword(), member.getPassword())) {
+            throw new ModifyDeniedException("잘못된 비밀번호");
+        }
+
+        // 해당 사용자 로그아웃
+        loginService.logout(request);
+
+        // 회원 삭제
+        memberRepository.deleteById(memberId);
 
     }
 
