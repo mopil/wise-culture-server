@@ -65,7 +65,7 @@ public class BoardController {
 	 */
 	// 게시글 작성
 	@PostMapping("/{memberId}")
-	public ResponseEntity<?> writeBoard(@PathVariable Long memberId, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult) {
+	public ResponseEntity<?> writeBoardWithoutLogin(@PathVariable Long memberId, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
 		Optional<Member> member = memberRepository.findById(memberId);
 		return success(boardService.writePost(boardForm.getTitle(), boardForm.getContent(), member.get()));
@@ -73,7 +73,7 @@ public class BoardController {
 
 	// 게시글 수정
 	@PutMapping("/{memberId}/{boardId}")
-	public ResponseEntity<?> editBoard(@PathVariable Long memberId, @PathVariable Long boardId, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult) {
+	public ResponseEntity<?> editBoardWithoutLogin(@PathVariable Long memberId, @PathVariable Long boardId, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult) {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
 		Optional<Member> member = memberRepository.findById(memberId);
 		return success(boardService.editPost(boardId, boardForm.getTitle(), boardForm.getContent(), member.get()));
@@ -81,7 +81,7 @@ public class BoardController {
 
 	// 게시글 삭제
 	@DeleteMapping("/{memberId}/{boardId}")
-	public ResponseEntity<?> deleteBoard(@PathVariable Long memberId, @PathVariable Long boardId) {
+	public ResponseEntity<?> deleteBoardWithoutLogin(@PathVariable Long memberId, @PathVariable Long boardId) {
 		Optional<Member> member = memberRepository.findById(memberId);
 		boardService.deletePost(boardId, member.get());
 		return success(new BoolResponse(true));

@@ -97,7 +97,7 @@ public class MemberController {
 
     // 닉네임 수정 : 로그인 없이
     @PutMapping("/{memberId}/nickname/{newNickname}")
-    public ResponseEntity<?> changeNickname(@PathVariable Long memberId, @PathVariable String newNickname) {
+    public ResponseEntity<?> changeNicknameWithoutLogin(@PathVariable Long memberId, @PathVariable String newNickname) {
         log.info("현재 로그인된 사용자 = {}", memberId);
         log.info("변경하고자 하는 새로운 닉네임 = {}", newNickname);
         Member updatedMember = memberService.changeNickname(memberId, newNickname);
@@ -107,7 +107,7 @@ public class MemberController {
 
     // 비밀번호 수정 : 로그인 없이
     @PutMapping("/{memberId}/password")
-    public ResponseEntity<?> changePassword(@PathVariable Long memberId,
+    public ResponseEntity<?> changePasswordWithoutLogin(@PathVariable Long memberId,
                                             @Valid @RequestBody ChangePasswordForm form,
                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -140,7 +140,7 @@ public class MemberController {
 
     // 회원 탈퇴 : 로그인 없이
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long memberId,
+    public ResponseEntity<?> deleteMemberWithoutLogin(@PathVariable Long memberId,
                                           @Valid @RequestBody DeleteMemberForm form,
                                           BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
