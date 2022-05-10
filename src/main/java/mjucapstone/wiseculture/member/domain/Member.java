@@ -3,6 +3,7 @@ package mjucapstone.wiseculture.member.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import mjucapstone.wiseculture.member.dto.MemberResponse;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,5 +46,18 @@ public class Member {
 
     protected Member() {
 
+    }
+
+    public MemberResponse toResponse() {
+        return MemberResponse.builder()
+                .memberId(id)
+                .userId(userId)
+                .email(email)
+                .name(name)
+                .nickname(nickname)
+                .password(password)
+                .point(point)
+                .phoneNumber(phoneNumber)
+                .build();
     }
 }

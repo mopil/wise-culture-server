@@ -3,15 +3,16 @@ package mjucapstone.wiseculture.member.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.member.config.EncryptManager;
-import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.*;
+import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.member.service.MemberService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -26,6 +27,7 @@ import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 public class MemberController {
 
     private final MemberService memberService;
+    private final LoginService loginService;
 
     /**
      * 회원가입
@@ -39,7 +41,7 @@ public class MemberController {
         }
         Member member = form.toMember(EncryptManager.hash(form.getPassword()));
         log.info("회원가입 성공 : {}", member);
-        return success(memberService.signUp(member));
+        return success(memberService.signUp(member).toResponse());
     }
 
     // 회원가입 : 닉네임 중복 체크
@@ -71,28 +73,30 @@ public class MemberController {
      */
     // 닉네임 수정
     @PutMapping("/nickname/{newNickname}")
-    public ResponseEntity<?> changeNickname(@Login Member loginMember, @PathVariable String newNickname) {
+    public ResponseEntity<?> changeNickname(HttpServletRequest request, @PathVariable String newNickname) throws LoginException {
+        Member loginMember = loginService.getLoginMember(request);
         log.info("현재 로그인된 사용자 = {}", loginMember);
         log.info("변경하고자 하는 새로운 닉네임 = {}", newNickname);
         Member updatedMember = memberService.changeNickname(loginMember, newNickname);
         log.info("변경된 사용자 정보 = {}", updatedMember);
-        return success(updatedMember);
+        return success(updatedMember.toResponse());
     }
 
     // 비밀번호 수정
     @PutMapping("/password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form,
-                                            BindingResult bindingResult,
-                                            @Login Member loginMember) {
+    public ResponseEntity<?> changePassword(HttpServletRequest request,
+                                            @Valid @RequestBody ChangePasswordForm form,
+                                            BindingResult bindingResult) throws LoginException {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
+        Member loginMember = loginService.getLoginMember(request);
         log.info("현재 로그인된 사용자 = {}", loginMember);
         log.info("변경하고자 하는 비밀번호 = {}", form.getNewPassword());
         Member updatedMember = memberService.changePassword(loginMember, form);
         log.info("변경된 사용자 정보 = {}", updatedMember);
-        return success(updatedMember);
+        return success(updatedMember.toResponse());
     }
 
     // 닉네임 수정 : 로그인 없이
@@ -102,7 +106,7 @@ public class MemberController {
         log.info("변경하고자 하는 새로운 닉네임 = {}", newNickname);
         Member updatedMember = memberService.changeNickname(memberId, newNickname);
         log.info("변경된 사용자 정보 = {}", updatedMember);
-        return success(updatedMember);
+        return success(updatedMember.toResponse());
     }
 
     // 비밀번호 수정 : 로그인 없이
@@ -118,20 +122,21 @@ public class MemberController {
         log.info("변경하고자 하는 비밀번호 = {}", form.getNewPassword());
         Member updatedMember = memberService.changePassword(memberId, form);
         log.info("변경된 사용자 정보 = {}", updatedMember);
-        return success(updatedMember);
+        return success(updatedMember.toResponse());
     }
 
     /**
      * 회원 탈퇴
      */
     @DeleteMapping("")
-    public ResponseEntity<?> deleteMember(@Valid @RequestBody DeleteMemberForm form,
-                                        BindingResult bindingResult,
-                                        @Login Member loginMember, HttpServletRequest request) {
+    public ResponseEntity<?> deleteMember(HttpServletRequest request,
+                                          @Valid @RequestBody DeleteMemberForm form,
+                                          BindingResult bindingResult) throws LoginException {
     	if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
+        Member loginMember = loginService.getLoginMember(request);
         log.info("현재 로그인된 사용자 = {}", loginMember);
     	memberService.delete(loginMember, form, request);
         log.info("회원 탈퇴 성공");
@@ -164,7 +169,7 @@ public class MemberController {
         }
         Member findMember = memberService.findUserId(form.getEmail(), form.getName());
         log.info("아이디 찾기로 찾아진 멤버 = {}", findMember);
-        return success(findMember);
+        return success(findMember.toResponse());
     }
 
     /**
@@ -174,7 +179,7 @@ public class MemberController {
     public ResponseEntity<?> passwordReset(@RequestBody PasswordResetForm form) {
         Member updatedMember = memberService.passwordReset(form);
         log.info("비밀번호 찾기(재설정) 완료 = {}", updatedMember);
-        return success(updatedMember);
+        return success(updatedMember.toResponse());
     }
 
 }

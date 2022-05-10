@@ -2,8 +2,8 @@ package mjucapstone.wiseculture.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.LogInForm;
+import mjucapstone.wiseculture.member.dto.MemberResponse;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class LoginController {
 			log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-		Member loginMember = loginService.login(loginForm, request);
+		MemberResponse loginMember = loginService.login(loginForm, request);
 		log.info("로그인 멤버 = {}", loginMember);
 		return success(loginMember);
 	}
