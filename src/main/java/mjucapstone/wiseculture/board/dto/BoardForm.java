@@ -1,7 +1,6 @@
 package mjucapstone.wiseculture.board.dto;
 
 import lombok.Data;
-import mjucapstone.wiseculture.location.domain.Location;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -14,6 +13,6 @@ public class BoardForm {
 	@NotEmpty
 	private String content;
 	
-	private Location location;
+//	private Location location;
 
 }

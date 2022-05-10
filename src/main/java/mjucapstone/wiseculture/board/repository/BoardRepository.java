@@ -2,7 +2,6 @@ package mjucapstone.wiseculture.board.repository;
 
 import mjucapstone.wiseculture.board.domain.Board;
 import mjucapstone.wiseculture.board.dto.BoardSummary;
-import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,8 +21,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 	Optional<Member> findWriterById(@Param("id") Long id);
 	
 	@Modifying(clearAutomatically = true)
-    @Query("UPDATE Board b SET b.title = :title, b.content = :content, b.location = :location WHERE b.id = :id")
-    void updateBoard(@Param("id") Long id, @Param("title") String title, @Param("content") String content, @Param("location") Location location);
+    @Query("UPDATE Board b SET b.title = :title, b.content = :content WHERE b.id = :id")
+    void updateBoard(@Param("id") Long id, @Param("title") String title, @Param("content") String content);
 	
 	@Modifying(clearAutomatically = true)
     @Query("UPDATE Board b SET b.viewCount = :viewCount WHERE b.id = :id")
