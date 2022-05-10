@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
+import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.message.dto.MessageForm;
 import mjucapstone.wiseculture.message.exception.MessageException;
 import mjucapstone.wiseculture.message.service.MessageService;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import static mjucapstone.wiseculture.util.dto.ErrorResponse.convertJson;
@@ -28,6 +31,7 @@ import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 public class MessageController {
 	
 	private final MessageService messageService;
+	private final LoginService loginService;
 	
 	// 대화 상대 조회
 	@GetMapping("")
@@ -37,20 +41,27 @@ public class MessageController {
 	
 	// user와 주고받은 메시지 조희
 	@GetMapping("/{memberId}")
-	public ResponseEntity<?> getMessage(@PathVariable Long memberId, @Login Member loginMember) {
+	public ResponseEntity<?> getMessage(HttpServletRequest request,
+										@PathVariable Long memberId) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
 		return success(messageService.getMessages(loginMember, memberId));
 	}
 	
 	// 메시지 쓰기
 	@PostMapping("/new")
-	public ResponseEntity<?> send(@Valid @RequestBody MessageForm messageForm, BindingResult bindingResult, @Login Member loginMember) {
+	public ResponseEntity<?> send(HttpServletRequest request,
+								  @Valid @RequestBody MessageForm messageForm,
+								  BindingResult bindingResult) throws LoginException {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
+		Member loginMember = loginService.getLoginMember(request);
 		return success(messageService.send(messageForm.getSender(), messageForm.getReceiver(), messageForm.getContent(), loginMember));
 	}
 	
 	// 메시지 삭제
 	@DeleteMapping("/{messageId}")
-	public ResponseEntity<?> deleteMessage(@PathVariable Long messageId, @Login Member loginMember) {
+	public ResponseEntity<?> deleteMessage(HttpServletRequest request,
+										   @PathVariable Long messageId) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
 		messageService.delete(messageId, loginMember);
 		return success(new BoolResponse(true));
 	}

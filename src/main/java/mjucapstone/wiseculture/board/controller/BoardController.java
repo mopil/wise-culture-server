@@ -3,16 +3,17 @@ package mjucapstone.wiseculture.board.controller;
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.board.dto.BoardForm;
 import mjucapstone.wiseculture.board.service.BoardService;
-import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.repository.MemberRepository;
+import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import java.util.Optional;
 
 import static mjucapstone.wiseculture.util.dto.ErrorResponse.convertJson;
@@ -26,6 +27,7 @@ public class BoardController {
 	
 	private final BoardService boardService;
 	private final MemberRepository memberRepository;
+	private final LoginService loginService;
 	
 	// 게시글 목록 조회
 	@GetMapping("")
@@ -41,21 +43,29 @@ public class BoardController {
 	
 	// 게시글 작성
 	@PostMapping("")
-	public ResponseEntity<?> writeBoard(@Valid @RequestBody BoardForm boardForm, BindingResult bindingResult, @Login Member loginMember) {
+	public ResponseEntity<?> writeBoard(HttpServletRequest request,
+										@Valid @RequestBody BoardForm boardForm,
+										BindingResult bindingResult) throws LoginException {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
+		Member loginMember = loginService.getLoginMember(request);
 		return success(boardService.writePost(boardForm.getTitle(), boardForm.getContent(), loginMember));
 	}
 	
 	// 게시글 수정
 	@PutMapping("/{boardId}")
-	public ResponseEntity<?> editBoard(@PathVariable Long boardId, @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult, @Login Member loginMember) {
+	public ResponseEntity<?> editBoard(HttpServletRequest request,
+									   @PathVariable Long boardId,
+									   @Valid @RequestBody BoardForm boardForm, BindingResult bindingResult) throws LoginException {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
+		Member loginMember = loginService.getLoginMember(request);
 		return success(boardService.editPost(boardId, boardForm.getTitle(), boardForm.getContent(), loginMember));
 	}
 	
 	// 게시글 삭제
 	@DeleteMapping("/{boardId}")
-	public ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @Login Member loginMember) {
+	public ResponseEntity<?> deleteBoard(HttpServletRequest request,
+										 @PathVariable Long boardId) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
 		boardService.deletePost(boardId, loginMember);
 		return success(new BoolResponse(true));
 	}
