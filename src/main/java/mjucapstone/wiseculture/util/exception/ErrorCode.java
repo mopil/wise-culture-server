@@ -22,4 +22,7 @@ public class ErrorCode {
     // JSON 파싱 오류
     public static final String JSON_PARSING_ERROR = "json";
 
+    // 쪽지 오류
+    public static final String MESSAGE_ERROR = "message";
+
 }
