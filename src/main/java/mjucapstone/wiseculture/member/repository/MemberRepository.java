@@ -18,6 +18,7 @@ public interface MemberRepository extends JpaRepository <Member, Long>{
     Optional<Member> findByUserId(String userId);
     Optional<Member> findByEmailAndName(String email, String name);
     Optional<Member> findByEmail(String email);
+    Optional<Member> findByNickname(String nickname);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Member m SET m.nickname = :newNickname WHERE m.id = :id")

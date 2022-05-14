@@ -13,6 +13,6 @@ public class BoardForm {
 	@NotEmpty
 	private String content;
 	
-//	private Location location;
+	private String locationTitle;
 
 }

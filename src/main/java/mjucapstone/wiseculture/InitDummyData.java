@@ -1,8 +1,8 @@
 package mjucapstone.wiseculture;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.board.domain.Board;
-import mjucapstone.wiseculture.board.repository.BoardRepository;
+import mjucapstone.wiseculture.board.Board;
+import mjucapstone.wiseculture.board.BoardRepository;
 import mjucapstone.wiseculture.member.config.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -22,6 +22,7 @@ public class InitDummyData {
 
     @PostConstruct
     public void userDummyData() {
+        // 사용자 세팅
         Member member = Member.builder()
                 .email("mopil1102@naver.com")
                 .name("테스트")
@@ -31,15 +32,16 @@ public class InitDummyData {
                 .phoneNumber("010-1234-1234")
                 .build();
         memberService.signUp(member);
-    }
 
-    @PostConstruct
-    public void boardDummyData() {
+        Member tester = memberService.findByNickName("토토로");
+
+        // 게시물 세팅
         List<Board> temp = new ArrayList<>();
         for (int i = 0 ; i<10 ; i++) {
             Board board = Board.builder()
                     .title("테스트 게시물" + i)
-                    .content("테스팅")
+                    .content("테스팅" + i * 10)
+                    .writer(tester)
                     .build();
             temp.add(board);
         }

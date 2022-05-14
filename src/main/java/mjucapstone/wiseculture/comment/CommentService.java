@@ -1,10 +1,7 @@
-package mjucapstone.wiseculture.comment.service;
+package mjucapstone.wiseculture.comment;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.board.repository.BoardRepository;
-import mjucapstone.wiseculture.comment.domain.Comment;
-import mjucapstone.wiseculture.comment.exception.CommentException;
-import mjucapstone.wiseculture.comment.repository.CommentRepository;
+import mjucapstone.wiseculture.board.BoardRepository;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

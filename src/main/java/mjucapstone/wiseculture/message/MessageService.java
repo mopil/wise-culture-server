@@ -1,11 +1,8 @@
-package mjucapstone.wiseculture.message.service;
+package mjucapstone.wiseculture.message;
 
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.repository.MemberRepository;
-import mjucapstone.wiseculture.message.exception.MessageException;
-import mjucapstone.wiseculture.message.domain.Message;
-import mjucapstone.wiseculture.message.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

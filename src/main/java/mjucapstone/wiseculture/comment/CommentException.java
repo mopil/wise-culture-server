@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.comment.exception;
+package mjucapstone.wiseculture.comment;
 
 public class CommentException extends RuntimeException {
 

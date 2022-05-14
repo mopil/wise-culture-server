@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.message.controller;
+package mjucapstone.wiseculture.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,6 @@ import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.message.dto.MessageForm;
-import mjucapstone.wiseculture.message.exception.MessageException;
-import mjucapstone.wiseculture.message.service.MessageService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
 import mjucapstone.wiseculture.util.dto.ErrorResponse;
 import mjucapstone.wiseculture.util.exception.ErrorCode;

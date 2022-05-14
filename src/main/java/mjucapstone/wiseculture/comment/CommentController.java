@@ -1,8 +1,7 @@
-package mjucapstone.wiseculture.comment.controller;
+package mjucapstone.wiseculture.comment;
 
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.comment.dto.CommentForm;
-import mjucapstone.wiseculture.comment.service.CommentService;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;

@@ -61,6 +61,11 @@ public class MemberService {
                 .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
     }
 
+    // 닉네임으로 조회
+    public Member findByNickName(String nickname) {
+        return memberRepository.findByNickname(nickname).orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
+    }
+
     /**
      * 회원 수정
      */

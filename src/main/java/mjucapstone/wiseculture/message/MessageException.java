@@ -1,4 +1,4 @@
-package mjucapstone.wiseculture.message.exception;
+package mjucapstone.wiseculture.message;
 
 public class MessageException extends RuntimeException {
 	

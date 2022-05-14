@@ -1,10 +1,10 @@
-package mjucapstone.wiseculture.comment.domain;
+package mjucapstone.wiseculture.comment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mjucapstone.wiseculture.board.domain.Board;
+import mjucapstone.wiseculture.board.Board;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.hibernate.annotations.CreationTimestamp;
 

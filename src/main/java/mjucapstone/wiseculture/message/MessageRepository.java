@@ -1,7 +1,6 @@
-package mjucapstone.wiseculture.message.repository;
+package mjucapstone.wiseculture.message;
 
 import mjucapstone.wiseculture.member.domain.Member;
-import mjucapstone.wiseculture.message.domain.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
