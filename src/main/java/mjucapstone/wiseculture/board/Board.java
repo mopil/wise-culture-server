@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import mjucapstone.wiseculture.board.dto.BoardForm;
 import mjucapstone.wiseculture.board.dto.BoardResponse;
 import mjucapstone.wiseculture.comment.Comment;
+import mjucapstone.wiseculture.comment.dto.CommentResponse;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -57,6 +58,8 @@ public class Board {
     }
 
     public BoardResponse toResponse() {
+        List<CommentResponse> tempComments = new ArrayList<>();
+        comments.forEach(comment -> tempComments.add(comment.toResponse()));
         return BoardResponse.builder()
                 .boardId(id)
                 .writerNickName(member.getNickname())
@@ -65,6 +68,7 @@ public class Board {
                 .locationTitle(locationTitle)
                 .viewCount(viewCount)
                 .createdDate(createdDate)
+                .comments(tempComments)
                 .build();
     }
 
@@ -82,4 +86,13 @@ public class Board {
         this.locationTitle = form.getLocationTitle();
     }
 
+    // 게시글이 가지고 있는 댓글 조회
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    // 댓글 추가
+    public void addComment(Comment comment) {
+        comments.add(comment);
+    }
 }

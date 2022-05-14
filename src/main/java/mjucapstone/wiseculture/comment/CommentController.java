@@ -2,6 +2,7 @@ package mjucapstone.wiseculture.comment;
 
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.comment.dto.CommentForm;
+import mjucapstone.wiseculture.comment.dto.CommentListResponse;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
@@ -18,47 +19,47 @@ import static mjucapstone.wiseculture.util.dto.RestResponse.badRequest;
 import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 
 @RestController
-@RequestMapping("/board")
 @RequiredArgsConstructor
 public class CommentController {
 	
 	private final CommentService commentService;
 	private final LoginService loginService;
 	
-	// 댓글 조회
-	@GetMapping("/{boardId}/comment")
+	// 특정 게시글에 있는 댓글 전체 조회
+	@GetMapping("/boards/{boardId}/comments")
 	public ResponseEntity<?> getComment(@PathVariable Long boardId) {
-		return success(commentService.getComments(boardId));
+		CommentListResponse comments = commentService.findAllByBoardId(boardId);
+		return success(comments);
 	}
 	
 	// 댓글 작성
-	@PostMapping("/{boardId}/comment")
-	public ResponseEntity<?> writeComment(HttpServletRequest request,
-										  @PathVariable Long boardId,
-										  @Valid @RequestBody CommentForm commentForm,
-										  BindingResult bindingResult) throws LoginException {
+	@PostMapping("/boards/{boardId}/comments")
+	public ResponseEntity<?> createComment(HttpServletRequest request,
+										   @PathVariable Long boardId,
+										   @Valid @RequestBody CommentForm commentForm,
+										   BindingResult bindingResult) throws LoginException {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
 		Member loginMember = loginService.getLoginMember(request);
-		return success(commentService.writeComment(boardId, commentForm.getContent(), loginMember));
+		Comment comment = commentService.createComment(boardId, commentForm, loginMember);
+		return success(comment.toResponse());
 	}
 	
 	// 댓글 수정
-	@PutMapping("/{boardId}/comment/{commentId}")
-	public ResponseEntity<?> editComment(HttpServletRequest request,
-										 @PathVariable Long boardId,
-										 @PathVariable Long commentId,
-										 @Valid @RequestBody CommentForm commentForm,
-										 BindingResult bindingResult) throws LoginException {
+	@PutMapping("/boards/comments/{commentId}")
+	public ResponseEntity<?> updateComment(HttpServletRequest request,
+										   @PathVariable Long commentId,
+										   @Valid @RequestBody CommentForm commentForm,
+										   BindingResult bindingResult) throws LoginException {
 		
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
 		Member loginMember = loginService.getLoginMember(request);
-		return success(commentService.editComment(commentId, commentForm.getContent(), loginMember));
+		Comment comment = commentService.updateComment(commentId, commentForm, loginMember);
+		return success(comment.toResponse());
 	}
 	
 	// 댓글 삭제
-	@DeleteMapping("/{boardId}/comment/{commentId}")
+	@DeleteMapping("/boards/comments/{commentId}")
 	public ResponseEntity<?> deleteComment(HttpServletRequest request,
-										   @PathVariable Long boardId,
 										   @PathVariable Long commentId) throws LoginException {
 		Member loginMember = loginService.getLoginMember(request);
 		commentService.deleteComment(commentId, loginMember);

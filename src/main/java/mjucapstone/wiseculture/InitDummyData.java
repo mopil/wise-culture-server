@@ -3,6 +3,8 @@ package mjucapstone.wiseculture;
 import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.board.Board;
 import mjucapstone.wiseculture.board.BoardRepository;
+import mjucapstone.wiseculture.comment.CommentService;
+import mjucapstone.wiseculture.comment.dto.CommentForm;
 import mjucapstone.wiseculture.member.config.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -19,6 +21,7 @@ import java.util.List;
 public class InitDummyData {
     private final MemberService memberService;
     private final BoardRepository boardRepository;
+    private final CommentService commentService;
 
     @PostConstruct
     public void userDummyData() {
@@ -46,6 +49,13 @@ public class InitDummyData {
             temp.add(board);
         }
         boardRepository.saveAll(temp);
+
+        Board board = boardRepository.findByTitle("테스트 게시물2").get();
+
+        // 댓글 세팅
+        String commentContent = "야 니팀 쩔더라 ㅋ";
+        CommentForm commentForm = new CommentForm(tester.getNickname(), commentContent);
+        commentService.createComment(board.getId(), commentForm, tester);
 
     }
 }

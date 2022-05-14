@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mjucapstone.wiseculture.board.Board;
+import mjucapstone.wiseculture.comment.dto.CommentResponse;
 import mjucapstone.wiseculture.member.domain.Member;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -40,6 +41,20 @@ public class Comment {
 		this.board		= board;
 		this.content	= content;
 		this.member		= writer;
+	}
+
+	public CommentResponse toResponse() {
+		return CommentResponse.builder()
+				.commentId(id)
+				.writerNickname(member.getNickname())
+				.content(content)
+				.createdTime(createdAt)
+				.build();
+	}
+
+	public void update(String newContent) {
+		this.content = newContent;
+		this.createdAt = LocalDateTime.now();
 	}
 	
 }

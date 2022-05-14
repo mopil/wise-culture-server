@@ -3,8 +3,10 @@ package mjucapstone.wiseculture.board.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import mjucapstone.wiseculture.comment.dto.CommentResponse;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +18,7 @@ public class BoardResponse {
     private String content;
     private int viewCount;
     private String locationTitle;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdTime;
+
+    private List<CommentResponse> comments;
 }
