@@ -30,7 +30,7 @@ public class Board {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdDate;
+    private LocalDateTime createdTime;
 
     private String content;
     private int viewCount;
@@ -67,7 +67,7 @@ public class Board {
                 .content(content)
                 .locationTitle(locationTitle)
                 .viewCount(viewCount)
-                .createdDate(createdDate)
+                .createdTime(createdTime)
                 .comments(tempComments)
                 .build();
     }

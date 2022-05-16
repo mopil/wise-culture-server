@@ -1,19 +1,22 @@
 package mjucapstone.wiseculture.message.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Data
+@AllArgsConstructor
+@Builder
 public class MessageForm {
 	
-	@NotNull
-	private Long sender;
-	
-	@NotNull
-	private Long receiver;
-	
+	@NotEmpty
+	private String receiverNickname;
+
+	@NotEmpty
+	private String title;
+
 	@NotEmpty
 	private String content;
 

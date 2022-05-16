@@ -2,10 +2,10 @@ package mjucapstone.wiseculture.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mjucapstone.wiseculture.member.config.Login;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.LoginService;
 import mjucapstone.wiseculture.message.dto.MessageForm;
+import mjucapstone.wiseculture.message.dto.MessageListResponse;
 import mjucapstone.wiseculture.util.dto.BoolResponse;
 import mjucapstone.wiseculture.util.dto.ErrorResponse;
 import mjucapstone.wiseculture.util.exception.ErrorCode;
@@ -24,43 +24,77 @@ import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 
 @RestController
 @Slf4j
-@RequestMapping("/message")
+@RequestMapping("/messages")
 @RequiredArgsConstructor
 public class MessageController {
 	
 	private final MessageService messageService;
 	private final LoginService loginService;
-	
-	// 대화 상대 조회
-	@GetMapping("")
-	public ResponseEntity<?> getUser(@Login Member loginMember) {
-		return success(messageService.getContact(loginMember));
+
+	/**
+	 * 메시지 조회
+	 */
+	// 메시지 id로 하나 조회
+	@GetMapping("/{messageId}")
+	public ResponseEntity<?> getMessage(@PathVariable Long messageId) {
+		Message message = messageService.findById(messageId);
+		return success(message.toResponse());
 	}
-	
-	// user와 주고받은 메시지 조희
-	@GetMapping("/{memberId}")
-	public ResponseEntity<?> getMessage(HttpServletRequest request,
-										@PathVariable Long memberId) throws LoginException {
+
+	// (로그인 유저 기준) 받은 메시지 전체 조회
+	@GetMapping("/received")
+	public ResponseEntity<?> getAllReceived(HttpServletRequest request) throws LoginException {
 		Member loginMember = loginService.getLoginMember(request);
-		return success(messageService.getMessages(loginMember, memberId));
+		MessageListResponse allReceived = messageService.getAllReceived(loginMember);
+		return success(allReceived);
 	}
-	
-	// 메시지 쓰기
-	@PostMapping("/new")
-	public ResponseEntity<?> send(HttpServletRequest request,
-								  @Valid @RequestBody MessageForm messageForm,
-								  BindingResult bindingResult) throws LoginException {
+
+	// (로그인 유저 기준) 보낸 메시지 전체 조회
+	@GetMapping("/sent")
+	public ResponseEntity<?> getAllSent(HttpServletRequest request) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
+		MessageListResponse allSent = messageService.getAllSent(loginMember);
+		return success(allSent);
+	}
+
+	/**
+	 * 메시지 생성
+	 */
+	@PostMapping("")
+	public ResponseEntity<?> createMessage(HttpServletRequest request,
+										   @Valid @RequestBody MessageForm messageForm,
+										   BindingResult bindingResult) throws LoginException {
 		if(bindingResult.hasErrors()) return badRequest(convertJson(bindingResult.getFieldErrors()));
 		Member loginMember = loginService.getLoginMember(request);
-		return success(messageService.send(messageForm.getSender(), messageForm.getReceiver(), messageForm.getContent(), loginMember));
+		Message message = messageService.createMessage(loginMember, messageForm);
+		return success(message.toResponse());
 	}
-	
-	// 메시지 삭제
+
+	/**
+	 * 메시지 삭제
+	 */
+	// 메시지 하나 삭제
 	@DeleteMapping("/{messageId}")
 	public ResponseEntity<?> deleteMessage(HttpServletRequest request,
 										   @PathVariable Long messageId) throws LoginException {
 		Member loginMember = loginService.getLoginMember(request);
 		messageService.delete(messageId, loginMember);
+		return success(new BoolResponse(true));
+	}
+
+	// (로그인 기준) 받은 메시지 전체 삭제
+	@DeleteMapping("/received")
+	public ResponseEntity<?> deleteAllReceived(HttpServletRequest request) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
+		messageService.deleteAllReceived(loginMember);
+		return success(new BoolResponse(true));
+	}
+
+	// (로그인 기준) 보낸 메시지 전체 삭제
+	@DeleteMapping("/sent")
+	public ResponseEntity<?> deleteAllSent(HttpServletRequest request) throws LoginException {
+		Member loginMember = loginService.getLoginMember(request);
+		messageService.deleteAllSent(loginMember);
 		return success(new BoolResponse(true));
 	}
 
