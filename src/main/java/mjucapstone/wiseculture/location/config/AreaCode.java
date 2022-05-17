@@ -8,4 +8,12 @@ public class AreaCode {
     
     // 나머지 추가 예정
 
+    public static String getAreaName(Long areaCode) {
+        if (areaCode == AreaCode.서울) return "서울";
+        else if (areaCode == AreaCode.경기도) return "경기도";
+        else if (areaCode == AreaCode.강원도) return "강원도";
+        else if (areaCode == AreaCode.충청북도) return "충청북도";
+        else return "기타";
+    }
+
 }

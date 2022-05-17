@@ -25,4 +25,7 @@ public class ErrorCode {
     // 쪽지 오류
     public static final String MESSAGE_ERROR = "message";
 
+    // 오픈 API 오류
+    public static final String OPEN_API_ERROR = "openApi";
+
 }

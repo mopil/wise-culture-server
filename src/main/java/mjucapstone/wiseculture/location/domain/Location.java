@@ -1,11 +1,17 @@
 package mjucapstone.wiseculture.location.domain;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import mjucapstone.wiseculture.location.config.AreaCode;
+import mjucapstone.wiseculture.location.config.ContentCode;
+import mjucapstone.wiseculture.location.dto.LocationResponse;
 
 import javax.persistence.*;
 
 @Entity @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
 	
 	@Id @GeneratedValue
@@ -35,7 +41,17 @@ public class Location {
 		this.mapY = mapY;
 	}
 
-	protected Location() {
-
+	public LocationResponse toResponse() {
+		return LocationResponse.builder()
+				.locationId(id)
+				.title(title)
+				.address(address)
+				.mapX(mapX)
+				.mapY(mapY)
+				.firstImage(firstImage)
+				.areaName(AreaCode.getAreaName(areaCode))
+				.contentName(ContentCode.getContentName(contentTypeId))
+				.build();
 	}
+
 }
