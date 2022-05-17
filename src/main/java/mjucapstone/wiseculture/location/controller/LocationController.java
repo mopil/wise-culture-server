@@ -17,6 +17,10 @@ import static mjucapstone.wiseculture.util.dto.RestResponse.success;
 public class LocationController {
     private final LocationService locationService;
 
+    /**
+     * 오픈 API 서버에서 바로 다이렉트로 가져와서 파싱 후 안드로이드로 뿌려주기 
+     */
+
     // 현재 위치 기반으로 검색
     // mapX와 mapY를 쿼리 파라미터로 넘길때 무조건 소수점을 넣어서 넘겨야 인식함 (매우 중요)
     @GetMapping("/position/{mapX}/{mapY}")
@@ -45,4 +49,5 @@ public class LocationController {
         LocationListResponse allByPosition = locationService.findAllByAreaContent(areaCode, contentTypeId);
         return success(allByPosition);
     }
+
 }

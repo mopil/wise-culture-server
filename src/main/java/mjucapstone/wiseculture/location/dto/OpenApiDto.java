@@ -3,7 +3,8 @@ package mjucapstone.wiseculture.location.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import mjucapstone.wiseculture.location.domain.Location;
+import mjucapstone.wiseculture.location.config.AreaCode;
+import mjucapstone.wiseculture.location.config.ContentCode;
 
 @Data
 @AllArgsConstructor
@@ -22,12 +23,12 @@ public class OpenApiDto {
     private double mapX;
     private double mapY;
 
-    public Location toEntity() {
-        return Location.builder()
+    public LocationResponse toResponse() {
+        return LocationResponse.builder()
                 .title(title)
                 .address(address)
-                .areaCode(areaCode)
-                .contentTypeId(contentTypeId)
+                .areaName(AreaCode.getAreaName(areaCode))
+                .contentName(ContentCode.getContentName(contentTypeId))
                 .firstImage(firstImage)
                 .mapX(mapX)
                 .mapY(mapY)

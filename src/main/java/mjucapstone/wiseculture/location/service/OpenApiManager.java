@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.location.config.BasedList;
 import mjucapstone.wiseculture.location.config.OpenApiConst;
-import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.location.dto.OpenApiDto;
 import mjucapstone.wiseculture.location.exception.OpenApiException;
 import org.json.simple.JSONArray;
@@ -29,49 +28,36 @@ public class OpenApiManager {
      * 핵심 조회 메소드
      */
     // 지역 기반 조회
-    public List<Location> fetchByAreaCode(int areaCode, int numOfRows) {
+    public List<OpenApiDto> fetchByAreaCode(int areaCode, int numOfRows) {
         String areaUrl = makeAreaUrl(areaCode, numOfRows);
-        List<OpenApiDto> dtoList = fetch(areaUrl);
-        return makeEntityList(dtoList);
+        return fetch(areaUrl);
     }
 
     // 문화 기반 조회
-    public List<Location> fetchByContent(int contentTypeId, int numOfRows) {
+    public List<OpenApiDto> fetchByContent(int contentTypeId, int numOfRows) {
         String contentUrl = makeContentUrl(contentTypeId, numOfRows);
         log.info("content URL = {}", contentUrl);
-        List<OpenApiDto> dtoList = fetch(contentUrl);
-        return makeEntityList(dtoList);
+        return fetch(contentUrl);
     }
     
     // 지역 + 문화 기반 조회
-    public List<Location> fetchByAreaContent(int areaCode, int contentTypeId, int numOfRows) {
+    public List<OpenApiDto> fetchByAreaContent(int areaCode, int contentTypeId, int numOfRows) {
         String positionUrl = makeAreaContentUrl(areaCode, contentTypeId, numOfRows);
-        List<OpenApiDto> dtoList = fetch(positionUrl);
-        return makeEntityList(dtoList);
+        return fetch(positionUrl);
     }
 
     // 현재 위치 기반 조회
-    public List<Location> fetchByPosition(double mapX, double mapY, int radius, int numOfRows) {
+    public List<OpenApiDto> fetchByPosition(double mapX, double mapY, int radius, int numOfRows) {
         String positionUrl = makePositionUrl(mapX, mapY, radius, numOfRows);
-        List<OpenApiDto> dtoList = fetch(positionUrl);
-        return makeEntityList(dtoList);
+        return fetch(positionUrl);
     }
-
-
-
 
     /**
      * 편의 private 메소드들
      */
-    // DTO 리스트를 엔티티 리스트로 변환
-    private List<Location> makeEntityList(List<OpenApiDto> dtoList) {
-        List<Location> result = new ArrayList<>();
-        dtoList.forEach(i -> result.add(i.toEntity()));
-        return result;
-    }
     // 기본 URL 만들기
     private String makeBaseUrl(String apiUriType) {
-        return OpenApiConst.ENDPOINT + apiUriType + OpenApiConst.SERVICE_KEY + OpenApiConst.DEFAULT_QUERY_PARAMS;
+        return OpenApiConst.ENDPOINT + apiUriType + OpenApiConst.SERVICE_KEY + OpenApiConst.DEFAULT_QUERY_PARAMS + OpenApiConst.SORT_BY_POPULAR;
     }
 
     // 지역 기반 URL 만들기
@@ -183,7 +169,4 @@ public class OpenApiManager {
                 mapY((double) item.get("mapy")).
                 build();
     }
-
-
-
 }

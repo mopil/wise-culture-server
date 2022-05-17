@@ -1,10 +1,9 @@
 package mjucapstone.wiseculture.location.service;
 
 import lombok.RequiredArgsConstructor;
-import mjucapstone.wiseculture.location.domain.Location;
 import mjucapstone.wiseculture.location.dto.LocationListResponse;
 import mjucapstone.wiseculture.location.dto.LocationResponse;
-import mjucapstone.wiseculture.location.repository.LocationRepository;
+import mjucapstone.wiseculture.location.dto.OpenApiDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,36 +23,34 @@ public class LocationService {
     private final int DEFAULT_RADIUS = 1000;
 
     private final OpenApiManager openApiManager;
-    private final LocationRepository locationRepository;
 
-    private LocationListResponse makeResponseList(List<Location> locations) {
+    private LocationListResponse makeResponseList(List<OpenApiDto> dtoList) {
         List<LocationResponse> result = new ArrayList<>();
-        locations.forEach(l -> result.add(l.toResponse()));
+        dtoList.forEach(l -> result.add(l.toResponse()));
         return new LocationListResponse(result);
     }
 
     // 현재 위치 기반 조회
     public LocationListResponse findAllByPosition(double mapX, double mapY) {
-        List<Location> locations = openApiManager.fetchByPosition(mapX, mapY, DEFAULT_RADIUS, DEFAULT_NUM_OF_ROWS);
+        List<OpenApiDto> locations = openApiManager.fetchByPosition(mapX, mapY, DEFAULT_RADIUS, DEFAULT_NUM_OF_ROWS);
         return makeResponseList(locations);
     }
 
     // 지역 기반 조회
     public LocationListResponse findAllByArea(int areaCode) {
-        List<Location> locations = openApiManager.fetchByAreaCode(areaCode, DEFAULT_NUM_OF_ROWS);
+        List<OpenApiDto> locations = openApiManager.fetchByAreaCode(areaCode, DEFAULT_NUM_OF_ROWS);
         return makeResponseList(locations);
     }
 
     // 문화 기반 조회
     public LocationListResponse findAllByContent(int contentTypeId) {
-        List<Location> locations = openApiManager.fetchByContent(contentTypeId, DEFAULT_NUM_OF_ROWS);
+        List<OpenApiDto> locations = openApiManager.fetchByContent(contentTypeId, DEFAULT_NUM_OF_ROWS);
         return makeResponseList(locations);
     }
 
     // 지역 + 문화 기반 조회
     public LocationListResponse findAllByAreaContent(int areaCode, int contentTypeId) {
-        List<Location> locations = openApiManager.fetchByAreaContent(areaCode, contentTypeId, DEFAULT_NUM_OF_ROWS);
+        List<OpenApiDto> locations = openApiManager.fetchByAreaContent(areaCode, contentTypeId, DEFAULT_NUM_OF_ROWS);
         return makeResponseList(locations);
     }
-
 }
