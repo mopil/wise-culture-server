@@ -161,7 +161,7 @@ public class MemberController {
     /**
      * 아이디 찾기
      */
-    @GetMapping("/user-id")
+    @PostMapping("/user-id")
     public ResponseEntity<?> findUserID(@Valid @RequestBody FindIdForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info("Errors = {}", bindingResult.getFieldErrors());
