@@ -156,7 +156,8 @@ public class OpenApiManager {
     private OpenApiDto makeLocationDto(JSONObject item) {
         // 가끔 좌표 데이터가 타입이 다른경우 처리
         if (item.get("mapx") instanceof String || item.get("mapy") instanceof String
-                || item.get("addr1") == null || item.get("firstimage") == null) {
+                || item.get("addr1") == null || item.get("firstimage") == null
+                || item.get("areacode") == null || item.get("contenttypeid") == null || item.get("title") == null) {
             return null;
         }
         return OpenApiDto.builder().

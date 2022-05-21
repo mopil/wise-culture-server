@@ -1,6 +1,7 @@
 package mjucapstone.wiseculture.location.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.location.dto.LocationListResponse;
 import mjucapstone.wiseculture.location.dto.LocationResponse;
 import mjucapstone.wiseculture.location.dto.OpenApiDto;
@@ -13,6 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class LocationService {
 
     /**
@@ -33,6 +35,7 @@ public class LocationService {
     // 현재 위치 기반 조회
     public LocationListResponse findAllByPosition(double mapX, double mapY) {
         List<OpenApiDto> locations = openApiManager.fetchByPosition(mapX, mapY, DEFAULT_RADIUS, DEFAULT_NUM_OF_ROWS);
+        log.info("디티오 = {}", locations);
         return makeResponseList(locations);
     }
 
