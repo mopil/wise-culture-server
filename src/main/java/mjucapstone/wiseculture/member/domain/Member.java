@@ -1,14 +1,17 @@
 package mjucapstone.wiseculture.member.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import mjucapstone.wiseculture.board.Board;
+import mjucapstone.wiseculture.comment.Comment;
 import mjucapstone.wiseculture.member.dto.MemberResponse;
+import mjucapstone.wiseculture.message.Message;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity @Getter
 @ToString
@@ -31,8 +34,21 @@ public class Member {
     @Column(name = "phone")
     private String phoneNumber;
 
-//    @OneToMany
-//    private List<Location> locationList = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<Message> receivedMessages = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<Message> sentMessages = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Board> boards = new ArrayList<>();
 
     @Builder
     public Member(String userId, String email, String name, String nickname, String password, String phoneNumber) {

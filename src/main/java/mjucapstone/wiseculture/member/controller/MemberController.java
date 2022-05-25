@@ -61,11 +61,11 @@ public class MemberController {
     /**
      * 회원 조회
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id) {
-        Member findMember = memberService.findById(id);
+    @GetMapping("/{memberId}")
+    public ResponseEntity<?> getMember(@PathVariable Long memberId) {
+        Member findMember = memberService.findById(memberId);
         log.info("디비 PK로 조회된 회원 = {}", findMember);
-        return success(findMember);
+        return success(findMember.toResponse());
     }
     
     /**

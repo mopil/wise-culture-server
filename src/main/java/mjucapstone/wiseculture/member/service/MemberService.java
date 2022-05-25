@@ -1,6 +1,7 @@
 package mjucapstone.wiseculture.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mjucapstone.wiseculture.member.config.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.dto.ChangePasswordForm;
@@ -10,6 +11,7 @@ import mjucapstone.wiseculture.member.exception.MemberException;
 import mjucapstone.wiseculture.member.exception.ModifyDeniedException;
 import mjucapstone.wiseculture.member.exception.SignUpException;
 import mjucapstone.wiseculture.member.repository.MemberRepository;
+import mjucapstone.wiseculture.message.MessageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EmailService emailService;
     private final LoginService loginService;
+    private final MessageService messageService;
 
     /**
      * 회원 가입
@@ -120,7 +124,7 @@ public class MemberService {
      */
     @Transactional
     public void delete(Member loginMember, DeleteMemberForm form, HttpServletRequest request) {
-        
+        log.info("회원삭제 호출됨");
         // 폼의 비밀번호와 비밀번호 확인이 같은지 체크
         if (!form.getPassword().equals(form.getPasswordCheck())) {
             throw new ModifyDeniedException("비밀번호와 비밀번호 확인이 서로 다름");
@@ -134,8 +138,12 @@ public class MemberService {
         // 해당 사용자 로그아웃
         loginService.logout(request);
 
+//        // 회원과 연결된 메시지 삭제
+//        messageService.deleteAllSent(loginMember);
+//        messageService.deleteAllReceived(loginMember);
+
     	// 회원 삭제
-    	memberRepository.deleteById(loginMember.getId());
+        memberRepository.deleteById(loginMember.getId());
 
     }
 
