@@ -149,6 +149,8 @@ public class OpenApiManager {
             return result;
         } catch (Exception e) {
             throw new OpenApiException("오픈 API 예외 = fetch 로 가져온 데이터가 비어있음 (데이터 요청 방식 오류)");
+        } finally {
+            return result;
         }
     }
 
