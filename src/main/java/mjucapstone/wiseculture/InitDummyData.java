@@ -31,7 +31,7 @@ public class InitDummyData {
         // 사용자 세팅
         Member member = Member.builder()
                 .email("mopil1102@naver.com")
-                .name("테스트")
+                .name("황동호")
                 .nickname("토토로")
                 .userId("test1234")
                 .password(EncryptManager.hash("123456"))
