@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import mjucapstone.wiseculture.board.Board;
 import mjucapstone.wiseculture.board.BoardRepository;
 import mjucapstone.wiseculture.comment.CommentService;
-import mjucapstone.wiseculture.comment.dto.CommentForm;
 import mjucapstone.wiseculture.member.config.EncryptManager;
 import mjucapstone.wiseculture.member.domain.Member;
 import mjucapstone.wiseculture.member.service.MemberService;
@@ -36,14 +35,16 @@ public class InitDummyData {
                 .userId("test1234")
                 .password(EncryptManager.hash("123456"))
                 .phoneNumber("010-1234-1234")
+                .point(100)
                 .build();
         Member member1 = Member.builder()
-                .email("mopil1102@naver.com")
+                .email("mopil1102@gmail.com")
                 .name("배성흥")
                 .nickname("밤톨이")
                 .userId("mopil1102")
                 .password(EncryptManager.hash("123456"))
                 .phoneNumber("010-1234-1234")
+                .point(100)
                 .build();
         memberService.signUp(member);
         memberService.signUp(member1);
@@ -52,22 +53,39 @@ public class InitDummyData {
 
         // 게시물 세팅
         List<Board> temp = new ArrayList<>();
-        for (int i = 0 ; i<10 ; i++) {
-            Board board = Board.builder()
-                    .title("테스트 게시물" + i)
-                    .content("테스팅" + i * 10)
-                    .writer(tester)
-                    .build();
-            temp.add(board);
-        }
+        temp.add(Board.builder()
+                .title("제부도 놀러갈 분!!")
+                .content("이번주 주말에 제부도 놀러가요~")
+                .writer(tester)
+                .build());
+        temp.add(Board.builder()
+                .title("심심해요")
+                .content("무료하다")
+                .writer(tester)
+                .build());
+        temp.add(Board.builder()
+                .title("즐거운 꽃구경~")
+                .content("날씨도 좋아요~")
+                .writer(tester)
+                .build());
+        temp.add(Board.builder()
+                .title("충청도 친구")
+                .content("산책갈 친구 구합니다")
+                .writer(tester)
+                .build());
+        temp.add(Board.builder()
+                .title("서울 나들이")
+                .content("여행도하고 맛집도 가고!!")
+                .writer(tester)
+                .build());
         boardRepository.saveAll(temp);
 
-        Board board = boardRepository.findByTitle("테스트 게시물2").get();
-
-        // 댓글 세팅
-        String commentContent = "야 니팀 쩔더라 ㅋ";
-        CommentForm commentForm = new CommentForm(tester.getNickname(), commentContent);
-        commentService.createComment(board.getId(), commentForm, tester);
+//        Board board = boardRepository.findByTitle("테스트 게시물2").get();
+//
+//        // 댓글 세팅
+//        String commentContent = "야 니팀 쩔더라 ㅋ";
+//        CommentForm commentForm = new CommentForm(tester.getNickname(), commentContent);
+//        commentService.createComment(board.getId(), commentForm, tester);
 
         // 메시지 세팅
         MessageForm messageForm = MessageForm.builder()

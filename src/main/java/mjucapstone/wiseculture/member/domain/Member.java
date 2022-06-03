@@ -51,13 +51,14 @@ public class Member {
     private List<Board> boards = new ArrayList<>();
 
     @Builder
-    public Member(String userId, String email, String name, String nickname, String password, String phoneNumber) {
+    public Member(String userId, String email, String name, String nickname, String password, String phoneNumber, int point) {
         this.userId = userId;
         this.email = email;
         this.name = name;
         this.nickname = nickname;
         this.password = password;
         this.phoneNumber = phoneNumber;
+        this.point = point;
     }
 
     protected Member() {
