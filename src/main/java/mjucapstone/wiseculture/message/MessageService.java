@@ -23,8 +23,8 @@ public class MessageService {
     private final MemberRepository memberRepository;
 
     // 메시지 받는 상대방 가져오기
-    public Member getReceiver(String receiverNickname) {
-        return memberRepository.findByNickname(receiverNickname).orElseThrow(() -> new MemberException("해당 회원 조회 오류"));
+    public Member getReceiver(String receiverUserId) {
+        return memberRepository.findByUserId(receiverUserId).orElseThrow(() -> new MemberException("해당 회원 조회 오류"));
     }
 
     // 메지시 id로 하나 조회 (상세 보기 용)
@@ -50,7 +50,7 @@ public class MessageService {
 
     // 메시지 쓰기
     public Message createMessage(Member sender, MessageForm messageForm) {
-        Member receiver = getReceiver(messageForm.getReceiverNickname());
+        Member receiver = getReceiver(messageForm.getReceiverUserId());
 
         Message message = Message.builder()
                 .sender(sender)

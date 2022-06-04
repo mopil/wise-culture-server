@@ -67,6 +67,12 @@ public class MemberController {
         log.info("디비 PK로 조회된 회원 = {}", findMember);
         return success(findMember.toResponse());
     }
+
+    // 회원 아이디로 회원 조회
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getMemberByUserId(@PathVariable String userId) {
+        return success(memberService.findMember(userId));
+    }
     
     /**
      * 회원 수정

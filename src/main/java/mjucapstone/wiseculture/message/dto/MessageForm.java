@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 public class MessageForm {
 	
 	@NotEmpty
-	private String receiverNickname;
+	private String receiverUserId;
 
 	@NotEmpty
 	private String title;

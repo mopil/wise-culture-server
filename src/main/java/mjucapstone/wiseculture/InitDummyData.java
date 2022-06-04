@@ -89,24 +89,24 @@ public class InitDummyData {
 
         // 메시지 세팅
         MessageForm messageForm = MessageForm.builder()
-                .title("테스트 쪽지")
-                .content("테스트용 쪽지 내용입니다")
-                .receiverNickname(member1.getNickname())
+                .title("경원대")
+                .content("저랑 경원대 축제 같이가요!")
+                .receiverUserId(member1.getUserId())
                 .build();
         MessageForm messageForm1 = MessageForm.builder()
-                .title("테스트 쪽지2")
-                .content("테스트용 쪽지 내용입니다2")
-                .receiverNickname(member1.getNickname())
+                .title("여행코스")
+                .content("전주쪽 여행코스 아는곳 있으신가요?")
+                .receiverUserId(member1.getUserId())
                 .build();
         MessageForm messageForm3 = MessageForm.builder()
-                .title("견적요청입니다")
-                .content("은 훼이크 입니다")
-                .receiverNickname(tester.getNickname())
+                .title("참여요청입니다")
+                .content("식도락 여행 같이가요")
+                .receiverUserId(tester.getUserId())
                 .build();
         MessageForm messageForm4 = MessageForm.builder()
-                .title("고객센터입니다")
-                .content("also fake yeah")
-                .receiverNickname(tester.getNickname())
+                .title("고인돌")
+                .content("어떤가요?")
+                .receiverUserId(tester.getUserId())
                 .build();
         messageService.createMessage(tester, messageForm);
         messageService.createMessage(tester, messageForm1);
