@@ -69,9 +69,9 @@ public class MemberController {
     }
 
     // 회원 아이디로 회원 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/user-id/{userId}")
     public ResponseEntity<?> getMemberByUserId(@PathVariable String userId) {
-        return success(memberService.findMember(userId));
+        return success(memberService.findMember(userId).toResponse());
     }
     
     /**
@@ -173,7 +173,7 @@ public class MemberController {
             log.info("Errors = {}", bindingResult.getFieldErrors());
             return badRequest(convertJson(bindingResult.getFieldErrors()));
         }
-        Member findMember = memberService.findUserId(form.getEmail(), form.getName());
+        Member findMember = memberService.findUserId(form.getEmail());
         log.info("아이디 찾기로 찾아진 멤버 = {}", findMember);
         return success(findMember.toResponse());
     }

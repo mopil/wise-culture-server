@@ -29,7 +29,7 @@ public class InitDummyData {
     public void userDummyData() {
         // 사용자 세팅
         Member member = Member.builder()
-                .email("mopil1102@naver.com")
+                .email("ghkdehdgh77@naver.com")
                 .name("황동호")
                 .nickname("토토로")
                 .userId("test1234")
@@ -38,7 +38,7 @@ public class InitDummyData {
                 .point(100)
                 .build();
         Member member1 = Member.builder()
-                .email("mopil1102@gmail.com")
+                .email("mopil1102@naver.com")
                 .name("배성흥")
                 .nickname("밤톨이")
                 .userId("mopil1102")

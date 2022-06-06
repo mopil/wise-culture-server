@@ -173,8 +173,8 @@ public class MemberService {
     /**
      * 회원 아이디 찾기
      */
-    public Member findUserId(String email, String name) {
-        return memberRepository.findByEmailAndName(email, name)
+    public Member findUserId(String email) {
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException("해당 회원을 찾을 수 없음"));
     }
 
