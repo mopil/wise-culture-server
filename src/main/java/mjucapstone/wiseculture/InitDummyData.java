@@ -88,16 +88,16 @@ public class InitDummyData {
 //        commentService.createComment(board.getId(), commentForm, tester);
 
         // 메시지 세팅
-        MessageForm messageForm = MessageForm.builder()
-                .title("경원대")
-                .content("저랑 경원대 축제 같이가요!")
-                .receiverUserId(member1.getUserId())
-                .build();
-        MessageForm messageForm1 = MessageForm.builder()
-                .title("여행코스")
-                .content("전주쪽 여행코스 아는곳 있으신가요?")
-                .receiverUserId(member1.getUserId())
-                .build();
+//        MessageForm messageForm = MessageForm.builder()
+//                .title("경원대")
+//                .content("저랑 경원대 축제 같이가요!")
+//                .receiverUserId(member1.getUserId())
+//                .build();
+//        MessageForm messageForm1 = MessageForm.builder()
+//                .title("여행코스")
+//                .content("전주쪽 여행코스 아는곳 있으신가요?")
+//                .receiverUserId(member1.getUserId())
+//                .build();
         MessageForm messageForm3 = MessageForm.builder()
                 .title("참여요청입니다")
                 .content("식도락 여행 같이가요")
@@ -108,8 +108,8 @@ public class InitDummyData {
                 .content("어떤가요?")
                 .receiverUserId(tester.getUserId())
                 .build();
-        messageService.createMessage(tester, messageForm);
-        messageService.createMessage(tester, messageForm1);
+//        messageService.createMessage(tester, messageForm);
+//        messageService.createMessage(tester, messageForm1);
         messageService.createMessage(member1, messageForm3);
         messageService.createMessage(member1, messageForm4);
 
